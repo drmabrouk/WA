@@ -90,6 +90,31 @@ jQuery(document).ready(function($) {
         $('#user-modal').removeClass('hidden');
     });
 
+    $(document).on('click', '.view-user', function() {
+        const userId = $(this).data('id');
+        const row = $(this).closest('tr');
+        const username = row.find('td:eq(0)').text();
+        const email = row.find('td:eq(1)').text();
+        const role = row.find('td:eq(2)').text();
+        const joined = row.find('td:eq(3)').text();
+        const status = row.find('td:eq(4)').text();
+
+        let html = `
+            <div class="user-detail-row"><strong>Username:</strong> ${username}</div>
+            <div class="user-detail-row"><strong>Email:</strong> ${email}</div>
+            <div class="user-detail-row"><strong>Role:</strong> ${role}</div>
+            <div class="user-detail-row"><strong>Joined:</strong> ${joined}</div>
+            <div class="user-detail-row"><strong>Status:</strong> ${status}</div>
+        `;
+
+        $('#user-details-content').html(html);
+        $('#user-details-modal').removeClass('hidden');
+    });
+
+    $(document).on('click', '#close-details-modal', function() {
+        $('#user-details-modal').addClass('hidden');
+    });
+
     $(document).on('click', '.edit-user', function() {
         const userId = $(this).data('id');
         const row = $(this).closest('tr');
@@ -103,7 +128,7 @@ jQuery(document).ready(function($) {
             'WSHC Administrator': 'wshc_administrator'
         };
 
-        $('#modal-title').text('Edit User');
+        $('#modal-title').text('EDIT ACCOUNT');
         $('#form-user-id').val(userId);
         $('#form-username').val(username);
         $('#form-email').val(email);

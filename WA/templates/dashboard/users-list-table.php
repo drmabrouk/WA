@@ -19,12 +19,12 @@
 <table class="wshc-table">
     <thead>
         <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Joined Date</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>User Name</th>
+            <th>Email Address</th>
+            <th>User Role</th>
+            <th>Registration Date</th>
+            <th>Account Status</th>
+            <th>Account Control Actions</th>
         </tr>
     </thead>
     <tbody id="user-table-body">
@@ -47,11 +47,18 @@
                     <?php endif; ?>
                 </td>
                 <td class="table-actions">
-                    <button class="edit-user action-btn" data-id="<?php echo $user->ID; ?>" title="Edit User">Edit</button>
-                    <button class="toggle-status action-btn <?php echo $suspended ? 'reactivate' : 'suspend'; ?>" data-id="<?php echo $user->ID; ?>">
-                        <?php echo $suspended ? 'Reactivate' : 'Suspend'; ?>
+                    <button class="view-user action-btn" data-id="<?php echo $user->ID; ?>" title="View Details">
+                        <span class="btn-icon">👁</span>
                     </button>
-                    <button class="delete-user action-btn delete" data-id="<?php echo $user->ID; ?>" title="Delete User">Delete</button>
+                    <button class="edit-user action-btn" data-id="<?php echo $user->ID; ?>" title="Edit Account">
+                        <span class="btn-icon">✎</span>
+                    </button>
+                    <button class="toggle-status action-btn <?php echo $suspended ? 'reactivate' : 'suspend'; ?>" data-id="<?php echo $user->ID; ?>" title="<?php echo $suspended ? 'Reactivate' : 'Restrict or suspend account'; ?>">
+                        <span class="btn-icon"><?php echo $suspended ? '✓' : '🚫'; ?></span>
+                    </button>
+                    <button class="delete-user action-btn delete" data-id="<?php echo $user->ID; ?>" title="Delete account">
+                        <span class="btn-icon">🗑</span>
+                    </button>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -65,7 +72,7 @@
 <!-- User Form Modal -->
 <div id="user-modal" class="wshc-modal hidden">
     <div class="wshc-modal-content">
-        <h2 id="modal-title">Add New User</h2>
+        <h2 id="modal-title">ADD NEW USER</h2>
         <form id="wshc-user-form">
             <input type="hidden" name="user_id" id="form-user-id">
             <div class="wshc-auth-form-group">
@@ -93,5 +100,18 @@
                 <button type="button" id="close-modal" class="wshc-auth-btn" style="background:#666;">Cancel</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="user-details-modal" class="wshc-modal hidden">
+    <div class="wshc-modal-content">
+        <h2>USER DETAILS</h2>
+        <div id="user-details-content">
+            <!-- Details will be loaded here -->
+        </div>
+        <div class="modal-actions">
+            <button type="button" id="close-details-modal" class="wshc-auth-btn">Close</button>
+        </div>
     </div>
 </div>
