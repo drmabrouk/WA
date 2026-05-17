@@ -38,9 +38,32 @@ class DashboardManager {
             exit;
         }
 
+        $stats = $this->get_dashboard_stats();
+
         ob_start();
-        $this->load_template('dashboard/layout');
+        $this->load_template('dashboard/layout', ['stats' => $stats]);
         return ob_get_clean();
+    }
+
+    /**
+     * Get statistics for the dashboard.
+     */
+    private function get_dashboard_stats() {
+        $user_count = count_users();
+
+        $suspended_query = new \WP_User_Query([
+            'meta_key'   => 'wshc_suspended',
+            'meta_value' => '1',
+            'count_total' => true
+        ]);
+        $suspended_count = $suspended_query->get_total();
+
+        return [
+            'total_users'     => $user_count['total_users'],
+            'suspended_users' => $suspended_count,
+            'active_users'    => $user_count['total_users'] - $suspended_count,
+            'recent_logs'     => \WSHC\UserManagement\ActivityLogger::get_logs(null, 10),
+        ];
     }
 
     /**

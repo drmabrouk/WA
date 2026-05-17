@@ -21,19 +21,74 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
         <!-- Sidebar -->
         <aside class="wshc-sidebar" id="wshc-sidebar">
             <ul>
-                <li><a href="#" class="nav-link active" data-section="dashboard-overview">Dashboard</a></li>
-                <li><a href="#" class="nav-link" data-section="user-management">System Users Management</a></li>
+                <li><a href="#" class="nav-link active" data-section="dashboard-overview">Dashboard Overview</a></li>
+                <li><a href="#" class="nav-link" data-section="user-management">User Management</a></li>
             </ul>
         </aside>
 
         <!-- Main Content -->
         <main class="wshc-content" id="wshc-main-content">
+            <!-- Dashboard Overview Section -->
             <div id="section-dashboard-overview" class="dashboard-section">
                 <h1>Dashboard Overview</h1>
-                <p>Welcome to the WSHC Management System.</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon users">👥</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Users</span>
+                            <span class="stat-value"><?php echo number_format($stats['total_users']); ?></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon active">✅</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Active Accounts</span>
+                            <span class="stat-value"><?php echo number_format($stats['active_users']); ?></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon suspended">🚫</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Suspended</span>
+                            <span class="stat-value"><?php echo number_format($stats['suspended_users']); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-secondary-grid">
+                    <div class="content-panel">
+                        <h2>Recent System Activities</h2>
+                        <table class="wshc-table compact">
+                            <thead>
+                                <tr>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($stats['recent_logs'] as $log) :
+                                    $admin = get_userdata($log->user_id);
+                                    $action_label = ucwords(str_replace('_', ' ', $log->action));
+                                ?>
+                                    <tr>
+                                        <td><?php echo $admin ? esc_html($admin->display_name) : 'System'; ?></td>
+                                        <td><span class="action-tag <?php echo esc_attr($log->action); ?>"><?php echo esc_html($action_label); ?></span></td>
+                                        <td><?php echo esc_html($log->details); ?></td>
+                                        <td><?php echo human_time_diff(strtotime($log->created_at), current_time('timestamp')); ?> ago</td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+
+            <!-- User Management Section -->
             <div id="section-user-management" class="dashboard-section hidden">
-                <h1>User Management</h1>
+                <h1>System Users Management</h1>
                 <div id="user-management-container">
                     <!-- User list will be loaded here -->
                 </div>
