@@ -7,6 +7,11 @@
             <option value="wshc_staff">Staff</option>
             <option value="wshc_member">Member</option>
         </select>
+        <select id="status-filter">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+        </select>
         <button id="add-user-btn" class="wshc-auth-btn" style="width: auto; display: inline-block;">Add User</button>
     </div>
 </div>
@@ -17,6 +22,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Joined Date</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -26,11 +32,13 @@
             $roles = $user->roles;
             $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'], $roles[0])) : 'User';
             $suspended = get_user_meta($user->ID, 'wshc_suspended', true);
+            $joined_date = date('M d, Y', strtotime($user->user_registered));
         ?>
             <tr>
-                <td><?php echo esc_html($user->user_login); ?></td>
+                <td><strong><?php echo esc_html($user->user_login); ?></strong></td>
                 <td><?php echo esc_html($user->user_email); ?></td>
                 <td><span class="role-capsule"><?php echo esc_html($role_label); ?></span></td>
+                <td><?php echo esc_html($joined_date); ?></td>
                 <td>
                     <?php if ($suspended) : ?>
                         <span class="status-capsule suspended">Suspended</span>
@@ -38,10 +46,12 @@
                         <span class="status-capsule active">Active</span>
                     <?php endif; ?>
                 </td>
-                <td>
-                    <button class="edit-user" data-id="<?php echo $user->ID; ?>">Edit</button>
-                    <button class="toggle-status" data-id="<?php echo $user->ID; ?>"><?php echo $suspended ? 'Reactivate' : 'Suspend'; ?></button>
-                    <button class="delete-user" data-id="<?php echo $user->ID; ?>">Delete</button>
+                <td class="table-actions">
+                    <button class="edit-user action-btn" data-id="<?php echo $user->ID; ?>" title="Edit User">Edit</button>
+                    <button class="toggle-status action-btn <?php echo $suspended ? 'reactivate' : 'suspend'; ?>" data-id="<?php echo $user->ID; ?>">
+                        <?php echo $suspended ? 'Reactivate' : 'Suspend'; ?>
+                    </button>
+                    <button class="delete-user action-btn delete" data-id="<?php echo $user->ID; ?>" title="Delete User">Delete</button>
                 </td>
             </tr>
         <?php endforeach; ?>

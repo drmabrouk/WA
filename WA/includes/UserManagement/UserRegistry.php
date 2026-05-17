@@ -29,6 +29,7 @@ class UserRegistry {
         $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
         $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
         $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : '';
+        $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : '';
 
         $args = [
             'number' => 10,
@@ -36,6 +37,23 @@ class UserRegistry {
             'search' => '*' . $search . '*',
             'role'   => $role,
         ];
+
+        if ($status === 'suspended') {
+            $args['meta_query'] = [
+                [
+                    'key'     => 'wshc_suspended',
+                    'value'   => '1',
+                    'compare' => '='
+                ]
+            ];
+        } elseif ($status === 'active') {
+            $args['meta_query'] = [
+                [
+                    'key'     => 'wshc_suspended',
+                    'compare' => 'NOT EXISTS'
+                ]
+            ];
+        }
 
         $user_query = new \WP_User_Query($args);
         $users = $user_query->get_results();

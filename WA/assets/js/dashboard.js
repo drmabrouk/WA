@@ -23,6 +23,7 @@ jQuery(document).ready(function($) {
     function loadUserManagement(paged = 1) {
         const search = $('#user-search').val();
         const role = $('#role-filter').val();
+        const status = $('#status-filter').val();
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -32,7 +33,8 @@ jQuery(document).ready(function($) {
                 nonce: wshc_dashboard_obj.nonce,
                 paged: paged,
                 search: search,
-                role: role
+                role: role,
+                status: status
             },
             success: function(response) {
                 if (response.success) {
@@ -59,7 +61,7 @@ jQuery(document).ready(function($) {
         loadUserManagement(1);
     });
 
-    $(document).on('change', '#role-filter', function() {
+    $(document).on('change', '#role-filter, #status-filter', function() {
         loadUserManagement(1);
     });
 
