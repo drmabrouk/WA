@@ -1,7 +1,8 @@
 jQuery(document).ready(function($) {
     // Sidebar Toggle
     $('#sidebar-toggle').on('click', function() {
-        $('#wshc-sidebar').toggleClass('collapsed');
+        const sidebar = $('#wshc-sidebar');
+        sidebar.toggleClass('collapsed');
     });
 
     // Navigation Switching
@@ -12,8 +13,10 @@ jQuery(document).ready(function($) {
         $('.wshc-sidebar .nav-link').removeClass('active');
         $(this).addClass('active');
 
-        $('.dashboard-section').addClass('hidden');
-        $(`#section-${section}`).removeClass('hidden');
+        $('.dashboard-section').fadeOut(200, function() {
+            $(this).addClass('hidden');
+            $(`#section-${section}`).hide().removeClass('hidden').fadeIn(300);
+        });
 
         if (section === 'user-management') {
             loadUserManagement();
@@ -24,6 +27,9 @@ jQuery(document).ready(function($) {
         const search = $('#user-search').val();
         const role = $('#role-filter').val();
         const status = $('#status-filter').val();
+        const container = $('#user-management-container');
+
+        container.css('opacity', '0.5');
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -37,16 +43,22 @@ jQuery(document).ready(function($) {
                 status: status
             },
             success: function(response) {
+                container.css('opacity', '1');
                 if (response.success) {
-                    $('#user-management-container').html(response.data.html);
+                    container.html(response.data.html);
                     renderPagination(response.data.pages, paged);
                 }
+            },
+            error: function() {
+                container.css('opacity', '1');
             }
         });
     }
 
     function renderPagination(totalPages, current) {
         let html = '';
+        if (totalPages <= 1) return $('#user-pagination').html('');
+
         for (let i = 1; i <= totalPages; i++) {
             html += `<button class="page-btn ${i === current ? 'active' : ''}" data-page="${i}">${i}</button>`;
         }
@@ -57,8 +69,12 @@ jQuery(document).ready(function($) {
         loadUserManagement($(this).data('page'));
     });
 
+    let searchTimer;
     $(document).on('input', '#user-search', function() {
-        loadUserManagement(1);
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            loadUserManagement(1);
+        }, 400);
     });
 
     $(document).on('change', '#role-filter, #status-filter', function() {
@@ -67,6 +83,9 @@ jQuery(document).ready(function($) {
 
     $(document).on('click', '.toggle-status', function() {
         const userId = $(this).data('id');
+        const btn = $(this);
+        btn.prop('disabled', true).css('opacity', '0.5');
+
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
             type: 'POST',
@@ -78,16 +97,19 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     loadUserManagement();
+                } else {
+                    alert(response.data.message);
+                    btn.prop('disabled', false).css('opacity', '1');
                 }
             }
         });
     });
 
     $(document).on('click', '#add-user-btn', function() {
-        $('#modal-title').text('Add New User');
+        $('#modal-title').text('ADD NEW USER');
         $('#wshc-user-form')[0].reset();
         $('#form-user-id').val('');
-        $('#user-modal').removeClass('hidden');
+        $('#user-modal').removeClass('hidden').hide().fadeIn(300);
     });
 
     $(document).on('click', '.view-user', function() {
@@ -100,19 +122,21 @@ jQuery(document).ready(function($) {
         const status = row.find('td:eq(4)').text();
 
         let html = `
-            <div class="user-detail-row"><strong>Username:</strong> ${username}</div>
-            <div class="user-detail-row"><strong>Email:</strong> ${email}</div>
-            <div class="user-detail-row"><strong>Role:</strong> ${role}</div>
-            <div class="user-detail-row"><strong>Joined:</strong> ${joined}</div>
-            <div class="user-detail-row"><strong>Status:</strong> ${status}</div>
+            <div class="user-detail-row"><strong>Username</strong> ${username}</div>
+            <div class="user-detail-row"><strong>Email</strong> ${email}</div>
+            <div class="user-detail-row"><strong>Role</strong> ${role}</div>
+            <div class="user-detail-row"><strong>Joined</strong> ${joined}</div>
+            <div class="user-detail-row"><strong>Status</strong> ${status}</div>
         `;
 
         $('#user-details-content').html(html);
-        $('#user-details-modal').removeClass('hidden');
+        $('#user-details-modal').removeClass('hidden').hide().fadeIn(300);
     });
 
     $(document).on('click', '#close-details-modal', function() {
-        $('#user-details-modal').addClass('hidden');
+        $('#user-details-modal').fadeOut(200, function() {
+            $(this).addClass('hidden');
+        });
     });
 
     $(document).on('click', '.edit-user', function() {
@@ -134,16 +158,21 @@ jQuery(document).ready(function($) {
         $('#form-email').val(email);
         $('#form-role').val(roleMap[roleText] || 'wshc_member');
         $('#form-password').val('');
-        $('#user-modal').removeClass('hidden');
+        $('#user-modal').removeClass('hidden').hide().fadeIn(300);
     });
 
     $(document).on('click', '#close-modal', function() {
-        $('#user-modal').addClass('hidden');
+        $('#user-modal').fadeOut(200, function() {
+            $(this).addClass('hidden');
+        });
     });
 
     $(document).on('submit', '#wshc-user-form', function(e) {
         e.preventDefault();
+        const btn = $(this).find('button[type="submit"]');
         const formData = $(this).serialize();
+
+        btn.prop('disabled', true).text('SAVING...');
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -156,6 +185,7 @@ jQuery(document).ready(function($) {
                 } else {
                     alert(response.data.message);
                 }
+                btn.prop('disabled', false).text('SAVE USER');
             }
         });
     });
@@ -163,6 +193,9 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.delete-user', function() {
         if (!confirm('Are you sure you want to delete this user?')) return;
         const userId = $(this).data('id');
+        const btn = $(this);
+        btn.prop('disabled', true).css('opacity', '0.5');
+
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
             type: 'POST',
@@ -174,6 +207,9 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     loadUserManagement();
+                } else {
+                    alert(response.data.message);
+                    btn.prop('disabled', false).css('opacity', '1');
                 }
             }
         });
