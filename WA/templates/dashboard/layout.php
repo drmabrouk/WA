@@ -21,8 +21,8 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
         <!-- Sidebar -->
         <aside class="wshc-sidebar" id="wshc-sidebar">
             <ul>
-                <li><a href="#" class="nav-link active" data-section="dashboard-overview">Dashboard Overview</a></li>
-                <li><a href="#" class="nav-link" data-section="user-management">User Management</a></li>
+                <li><a href="#" class="nav-link active" data-section="dashboard-overview"><span class="nav-icon">📊</span> Dashboard Overview</a></li>
+                <li><a href="#" class="nav-link" data-section="user-management"><span class="nav-icon">👥</span> User Management</a></li>
             </ul>
         </aside>
 
@@ -30,35 +30,45 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
         <main class="wshc-content" id="wshc-main-content">
             <!-- Dashboard Overview Section -->
             <div id="section-dashboard-overview" class="dashboard-section">
-                <h1>Dashboard Overview</h1>
+                <h1 class="section-title">DASHBOARD OVERVIEW</h1>
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon users">👥</div>
+                        <div class="stat-icon">👥</div>
                         <div class="stat-info">
                             <span class="stat-label">Total Users</span>
                             <span class="stat-value"><?php echo number_format($stats['total_users']); ?></span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon active">✅</div>
+                        <div class="stat-icon">✅</div>
                         <div class="stat-info">
                             <span class="stat-label">Active Accounts</span>
                             <span class="stat-value"><?php echo number_format($stats['active_users']); ?></span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon suspended">🚫</div>
+                        <div class="stat-icon">🚫</div>
                         <div class="stat-info">
                             <span class="stat-label">Suspended</span>
                             <span class="stat-value"><?php echo number_format($stats['suspended_users']); ?></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔑</div>
+                        <div class="stat-info">
+                            <span class="stat-label">Administrators</span>
+                            <span class="stat-value"><?php
+                                $admins = count_users();
+                                echo number_format($admins['avail_roles']['wshc_administrator'] ?? 0);
+                            ?></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="dashboard-secondary-grid">
                     <div class="content-panel">
-                        <h2>Recent System Activities</h2>
+                        <h2 class="section-title">RECENT SYSTEM ACTIVITIES</h2>
                         <table class="wshc-table compact">
                             <thead>
                                 <tr>
@@ -88,7 +98,7 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
 
             <!-- User Management Section -->
             <div id="section-user-management" class="dashboard-section hidden">
-                <h1>System Users Management</h1>
+                <h1 class="section-title">SYSTEM USERS MANAGEMENT</h1>
                 <div id="user-management-container">
                     <!-- User list will be loaded here -->
                 </div>
