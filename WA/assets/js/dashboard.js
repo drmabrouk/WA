@@ -5,6 +5,18 @@ jQuery(document).ready(function($) {
         sidebar.toggleClass('collapsed');
     });
 
+    // Password Toggle (Universal)
+    $(document).on('click', '.password-toggle', function() {
+        const input = $(this).siblings('input');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            $(this).removeClass('dashicons-visibility').addClass('dashicons-hidden');
+        } else {
+            input.attr('type', 'password');
+            $(this).removeClass('dashicons-hidden').addClass('dashicons-visibility');
+        }
+    });
+
     // Initial Load
     const activeSection = $('.dashboard-section:not(.hidden)');
     const sectionId = activeSection.attr('id');
@@ -101,8 +113,48 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Wizard Navigation
+    // Wizard Navigation & Draft Saving
     let currentWizardStep = 1;
+    const wizardForm = $('#membership-application-wizard');
+    const storageKey = `wshc_wizard_draft_${wshc_dashboard_obj.current_user_id}`;
+
+    if (wizardForm.length) {
+        // Load Draft
+        const savedDraft = localStorage.getItem(storageKey);
+        if (savedDraft) {
+            const draft = JSON.parse(savedDraft);
+            currentWizardStep = draft.step || 1;
+
+            // Populate fields
+            Object.keys(draft.data).forEach(key => {
+                const el = wizardForm.find(`[name="${key}"]`);
+                if (el.length && el.attr('type') !== 'file') {
+                    el.val(draft.data[key]);
+                }
+            });
+
+            $(`.wizard-pane`).addClass('hidden');
+            $(`#pane-${currentWizardStep}`).removeClass('hidden');
+            updateWizardUI();
+        }
+
+        // Save Draft on Change
+        wizardForm.on('input change', 'input, select, textarea', function() {
+            saveWizardDraft();
+        });
+    }
+
+    function saveWizardDraft() {
+        const formData = {};
+        wizardForm.serializeArray().forEach(item => {
+            formData[item.name] = item.value;
+        });
+
+        localStorage.setItem(storageKey, JSON.stringify({
+            step: currentWizardStep,
+            data: formData
+        }));
+    }
 
     $(document).on('click', '#next-step', function() {
         if (validateStep(currentWizardStep)) {
@@ -110,6 +162,7 @@ jQuery(document).ready(function($) {
             currentWizardStep++;
             $(`#pane-${currentWizardStep}`).removeClass('hidden');
             updateWizardUI();
+            saveWizardDraft();
         }
     });
 
@@ -118,6 +171,7 @@ jQuery(document).ready(function($) {
         currentWizardStep--;
         $(`#pane-${currentWizardStep}`).removeClass('hidden');
         updateWizardUI();
+        saveWizardDraft();
     });
 
     function updateWizardUI() {
@@ -171,6 +225,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 alert(response.data.message);
                 if (response.success) {
+                    localStorage.removeItem(storageKey); // Clear draft on success
                     window.location.reload();
                 }
                 btn.prop('disabled', false).text('COMPLETE APPLICATION');

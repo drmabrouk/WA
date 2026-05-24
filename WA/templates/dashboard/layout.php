@@ -243,7 +243,33 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
             <!-- Visitor Information & Apply Section -->
             <div id="section-info-apply" class="dashboard-section <?php echo ($current_section === 'info-apply' || (empty($current_section) && current_user_can('wshc_visitor'))) ? '' : 'hidden'; ?>">
                 <h1 class="section-title">MEMBERSHIP APPLICATION WIZARD</h1>
-                <div class="content-panel">
+
+                <?php
+                global $wpdb;
+                $user_id = get_current_user_id();
+                $application = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wshc_membership_applications WHERE user_id = %d ORDER BY created_at DESC LIMIT 1", $user_id));
+
+                if ($application) :
+                    $statuses = ['pending' => 1, 'approved' => 2, 'rejected' => 2];
+                    $current_status_step = $statuses[$application->status] ?? 1;
+                ?>
+                    <div class="content-panel" style="margin-bottom: 30px;">
+                        <h3>Application Tracking Timeline</h3>
+                        <div class="wizard-progress tracking">
+                            <div class="wizard-step completed">1. Submitted</div>
+                            <div class="wizard-step <?php echo $application->status === 'pending' ? 'active' : 'completed'; ?>">2. Under Review</div>
+                            <div class="wizard-step <?php echo $application->status === 'approved' ? 'active' : ''; ?> <?php echo $application->status === 'rejected' ? 'rejected' : ''; ?>">
+                                3. <?php echo $application->status === 'rejected' ? 'Rejected' : 'Approved'; ?>
+                            </div>
+                        </div>
+                        <p style="font-size: 13px; color: #666; margin-top: 15px;">
+                            Your application was submitted on <?php echo date('M d, Y', strtotime($application->created_at)); ?>.
+                            Status: <strong><?php echo strtoupper($application->status); ?></strong>
+                        </p>
+                    </div>
+                <?php endif; ?>
+
+                <div class="content-panel <?php echo ($application && $application->status === 'pending') ? 'hidden' : ''; ?>">
                     <div class="wizard-progress">
                         <div class="wizard-step active" data-step="1">1. Personal</div>
                         <div class="wizard-step" data-step="2">2. Academic</div>
