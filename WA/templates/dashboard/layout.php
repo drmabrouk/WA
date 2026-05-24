@@ -11,9 +11,13 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
             <span class="system-title">WSHC Management System</span>
         </div>
         <div class="nav-right">
-            <span class="user-name"><?php echo esc_html($current_user->display_name); ?></span>
-            <span class="role-capsule"><?php echo esc_html($role_label); ?></span>
-            <a href="<?php echo wp_logout_url(home_url('/wshc-login')); ?>" class="logout-link">Logout</a>
+            <div class="user-profile-stack">
+                <span class="user-name"><?php echo esc_html($current_user->display_name); ?></span>
+                <span class="role-capsule rank-capsule"><?php echo esc_html($role_label); ?></span>
+            </div>
+            <a href="<?php echo wp_logout_url(home_url('/wshc-login')); ?>" class="logout-icon-link" title="Logout">
+                <span class="logout-icon">⏻</span>
+            </a>
         </div>
     </nav>
 
@@ -33,28 +37,28 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
                 <h1 class="section-title">DASHBOARD OVERVIEW</h1>
 
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card users">
                         <div class="stat-icon">👥</div>
                         <div class="stat-info">
                             <span class="stat-label">Total Users</span>
                             <span class="stat-value"><?php echo number_format($stats['total_users']); ?></span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card active">
                         <div class="stat-icon">✅</div>
                         <div class="stat-info">
                             <span class="stat-label">Active Accounts</span>
                             <span class="stat-value"><?php echo number_format($stats['active_users']); ?></span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card suspended">
                         <div class="stat-icon">🚫</div>
                         <div class="stat-info">
                             <span class="stat-label">Suspended</span>
                             <span class="stat-value"><?php echo number_format($stats['suspended_users']); ?></span>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card admins">
                         <div class="stat-icon">🔑</div>
                         <div class="stat-info">
                             <span class="stat-label">Administrators</span>
