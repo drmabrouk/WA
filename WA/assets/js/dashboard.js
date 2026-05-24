@@ -110,6 +110,30 @@ jQuery(document).ready(function($) {
         });
     });
 
+    $(document).on('click', '#save-auth-settings', function() {
+        const btn = $(this);
+        const data = {
+            action: 'wshc_save_auth_settings',
+            nonce: wshc_dashboard_obj.nonce,
+            enable_reg: $('#enable-reg').is(':checked'),
+            enable_login: $('#enable-login').is(':checked'),
+            otp_message: $('#otp-message').val(),
+            welcome_message: $('#welcome-message').val()
+        };
+
+        btn.prop('disabled', true).text('SAVING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                alert(response.data.message);
+                btn.prop('disabled', false).text('SAVE CONFIGURATIONS');
+            }
+        });
+    });
+
     $(document).on('click', '#import-data-btn', function() {
         if (!confirm('Are you sure you want to import data? This may overwrite current settings.')) return;
 

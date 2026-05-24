@@ -1,8 +1,8 @@
 .wshc-auth-container {
     max-width: 480px;
-    margin: 80px auto;
+    margin: 40px auto;
     background: #fff;
-    padding: 50px;
+    padding: 40px 50px;
     border: 1px solid #eee;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,6 +36,10 @@
     letter-spacing: 0.5px;
 }
 
+.wshc-auth-form-group {
+    position: relative;
+}
+
 .wshc-auth-form-group input {
     width: 100%;
     padding: 12px 16px;
@@ -45,6 +49,19 @@
     outline: none;
     transition: border-color 0.2s;
     border-radius: 8px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .wshc-auth-form-group input:focus {

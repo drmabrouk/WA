@@ -565,6 +565,30 @@
     background: var(--wshc-black);
 }
 
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--wshc-gray-100);
+}
+
+.switch-label {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid var(--wshc-gray-300);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
 .settings-pane {
     animation: fadeIn 0.3s ease-out;
 }
