@@ -234,27 +234,164 @@ $base_url = home_url('/id');
 
             <!-- Visitor Information & Apply Section -->
             <div id="section-info-apply" class="dashboard-section <?php echo $current_section === 'info-apply' ? '' : 'hidden'; ?>">
-                <h1 class="section-title">INFORMATION & MEMBERSHIP</h1>
+                <h1 class="section-title">MEMBERSHIP APPLICATION WIZARD</h1>
                 <div class="content-panel">
-                    <h3>Apply for Membership</h3>
-                    <p>Welcome to the Global Council of Sport Health. To access full features, please submit your application below.</p>
+                    <div class="wizard-progress">
+                        <div class="wizard-step active" data-step="1">1. Personal</div>
+                        <div class="wizard-step" data-step="2">2. Academic</div>
+                        <div class="wizard-step" data-step="3">3. Professional</div>
+                        <div class="wizard-step" data-step="4">4. Credentials</div>
+                        <div class="wizard-step" data-step="5">5. Research</div>
+                    </div>
 
-                    <form id="membership-application-form" style="margin-top: 25px;">
-                        <div class="wshc-auth-grid">
+                    <form id="membership-application-wizard" class="wshc-wizard-form" enctype="multipart/form-data">
+                        <!-- Stage 1: Personal Info -->
+                        <div class="wizard-pane active" id="pane-1">
+                            <h3>Personal Information</h3>
                             <div class="wshc-auth-form-group">
-                                <label>Full Name</label>
-                                <input type="text" name="full_name" value="<?php echo esc_attr($current_user->display_name); ?>" required>
+                                <label>Full Legal Name</label>
+                                <input type="text" name="full_name" value="<?php echo esc_attr($current_user->display_name); ?>" required placeholder="Triple or quadruple official name">
+                            </div>
+                            <div class="wshc-auth-grid">
+                                <div class="wshc-auth-form-group">
+                                    <label>Date of Birth</label>
+                                    <input type="date" name="dob" required>
+                                </div>
+                                <div class="wshc-auth-form-group">
+                                    <label>Gender</label>
+                                    <select name="gender" required>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="wshc-auth-form-group">
-                                <label>Email Address</label>
-                                <input type="email" name="email" value="<?php echo esc_attr($current_user->user_email); ?>" required>
+                                <label>Nationality</label>
+                                <select name="nationality" required>
+                                    <option value="">Select Country</option>
+                                    <option value="United States">United States</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Saudi Arabia">Saudi Arabia</option>
+                                    <option value="Egypt">Egypt</option>
+                                    <option value="UAE">United Arab Emirates</option>
+                                    <!-- Add more as needed -->
+                                </select>
+                            </div>
+                            <div class="wshc-auth-grid">
+                                <div class="wshc-auth-form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" name="email" value="<?php echo esc_attr($current_user->user_email); ?>" required>
+                                </div>
+                                <div class="wshc-auth-form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" name="phone" placeholder="+123 456789" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="wshc-auth-form-group">
-                            <label>Country of Nationality</label>
-                            <input type="text" name="nationality" placeholder="Enter your country" required>
+
+                        <!-- Stage 2: Academic Background -->
+                        <div class="wizard-pane hidden" id="pane-2">
+                            <h3>Academic Background</h3>
+                            <div class="wshc-auth-grid">
+                                <div class="wshc-auth-form-group">
+                                    <label>Highest Degree</label>
+                                    <select name="degree" required>
+                                        <option value="Ph.D.">Ph.D.</option>
+                                        <option value="Master's">Master's</option>
+                                        <option value="Bachelor's">Bachelor's</option>
+                                        <option value="Higher Diploma">Higher Diploma</option>
+                                    </select>
+                                </div>
+                                <div class="wshc-auth-form-group">
+                                    <label>Graduation Year</label>
+                                    <input type="number" name="grad_year" min="1950" max="2025" required>
+                                </div>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Major/Field of Study</label>
+                                <input type="text" name="major" placeholder="e.g. Sports Medicine, Kinesiology" required>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>University/Institution</label>
+                                <input type="text" name="institution" required>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Degree Certificate (Upload Digital Copy)</label>
+                                <input type="file" name="cert_file" accept=".pdf,.jpg,.jpeg,.png">
+                            </div>
                         </div>
-                        <button type="submit" class="wshc-auth-btn" style="width: auto;">Submit Application</button>
+
+                        <!-- Stage 3: Professional Status -->
+                        <div class="wizard-pane hidden" id="pane-3">
+                            <h3>Professional Status</h3>
+                            <div class="wshc-auth-grid">
+                                <div class="wshc-auth-form-group">
+                                    <label>Current Job Title</label>
+                                    <input type="text" name="job_title" placeholder="e.g. University Lecturer" required>
+                                </div>
+                                <div class="wshc-auth-form-group">
+                                    <label>Years of Experience</label>
+                                    <input type="number" name="experience" min="0" required>
+                                </div>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Current Employer/Organization</label>
+                                <input type="text" name="employer" required>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>CV / Comprehensive Resume (Upload)</label>
+                                <input type="file" name="cv_file" accept=".pdf,.doc,.docx">
+                            </div>
+                        </div>
+
+                        <!-- Stage 4: Licensing & Credentials -->
+                        <div class="wizard-pane hidden" id="pane-4">
+                            <h3>Licensing & Credentials</h3>
+                            <div class="wshc-auth-form-group">
+                                <label>Professional License Number</label>
+                                <input type="text" name="license_number" placeholder="Regulatory or ministry code">
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Specialized Certifications</label>
+                                <textarea name="specialized_certs" placeholder="e.g. CPR, FIFA certifications, NSCA"></textarea>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Other Memberships</label>
+                                <textarea name="other_memberships" placeholder="List active associations or syndicates"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Stage 5: Research & Finance -->
+                        <div class="wizard-pane hidden" id="pane-5">
+                            <h3>Research & Finance</h3>
+                            <div class="wshc-auth-form-group">
+                                <label>Research & Publications</label>
+                                <textarea name="research_publications" placeholder="Links and titles of scientific journal articles"></textarea>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Core Areas of Interest</label>
+                                <select name="interests[]" multiple style="height: 100px;">
+                                    <option value="Athletic Injuries">Athletic Injuries</option>
+                                    <option value="Sports Nutrition">Sports Nutrition</option>
+                                    <option value="Exercise Physiology">Exercise Physiology</option>
+                                    <option value="Sports Psychology">Sports Psychology</option>
+                                </select>
+                            </div>
+                            <div class="payment-box" style="padding: 20px; background: #f9f9f9; border-radius: 8px; margin-top: 20px;">
+                                <h4>Annual Subscription Payment</h4>
+                                <p style="font-size: 13px; color: #666;">Secure electronic payment integration placeholder.</p>
+                                <div class="wshc-auth-form-group">
+                                    <input type="text" placeholder="Card Number (Placeholder)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="wizard-actions" style="margin-top: 30px; display: flex; gap: 15px;">
+                            <button type="button" id="prev-step" class="wshc-auth-btn hidden" style="background: #666;">Previous</button>
+                            <button type="button" id="next-step" class="wshc-auth-btn">Next Step</button>
+                            <button type="submit" id="submit-wizard" class="wshc-auth-btn hidden">Complete Application</button>
+                        </div>
                     </form>
                 </div>
             </div>
