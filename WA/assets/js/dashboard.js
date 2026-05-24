@@ -8,10 +8,20 @@ jQuery(document).ready(function($) {
     // Navigation Switching
     $('.wshc-sidebar .nav-link').on('click', function(e) {
         e.preventDefault();
+
+        if ($(this).hasClass('submenu-toggle')) {
+            $(this).parent().toggleClass('open');
+            return;
+        }
+
         const section = $(this).data('section');
+        if (!section) return;
 
         $('.wshc-sidebar .nav-link').removeClass('active');
         $(this).addClass('active');
+
+        // If it's a sub-link, also keep the parent active but not strictly 'active' class
+        // depending on how CSS is structured. For now, just the link itself.
 
         $('.dashboard-section').fadeOut(200, function() {
             $(this).addClass('hidden');
