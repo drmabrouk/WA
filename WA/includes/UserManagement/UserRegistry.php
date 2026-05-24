@@ -14,6 +14,33 @@ class UserRegistry {
         add_action('wp_ajax_wshc_save_user', [$this, 'save_user']);
         add_action('wp_ajax_wshc_delete_user', [$this, 'delete_user']);
         add_action('wp_ajax_wshc_toggle_user_status', [$this, 'toggle_user_status']);
+        add_action('wp_ajax_wshc_get_user_details', [$this, 'get_user_details']);
+    }
+
+    /**
+     * Get single user details.
+     */
+    public function get_user_details() {
+        check_ajax_referer('wshc_dashboard_nonce', 'nonce');
+
+        if (!current_user_can('manage_wshc_users')) {
+            wp_send_json_error(['message' => 'Permission denied.']);
+        }
+
+        $user_id = intval($_POST['user_id']);
+        $user = get_userdata($user_id);
+
+        if (!$user) {
+            wp_send_json_error(['message' => 'User not found.']);
+        }
+
+        wp_send_json_success([
+            'ID'         => $user->ID,
+            'user_login' => $user->user_login,
+            'user_email' => $user->user_email,
+            'first_name' => $user->first_name,
+            'last_name'  => $user->last_name,
+        ]);
     }
 
     /**
@@ -85,10 +112,14 @@ class UserRegistry {
         $email = sanitize_email($_POST['email']);
         $password = $_POST['password'];
         $role = sanitize_text_field($_POST['role']);
+        $first_name = sanitize_text_field($_POST['first_name'] ?? '');
+        $last_name = sanitize_text_field($_POST['last_name'] ?? '');
 
         $user_data = [
             'user_login' => $username,
             'user_email' => $email,
+            'first_name' => $first_name,
+            'last_name'  => $last_name,
             'role'       => $role,
         ];
 

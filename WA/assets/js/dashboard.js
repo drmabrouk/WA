@@ -163,16 +163,30 @@ jQuery(document).ready(function($) {
         const joined = row.find('td:eq(3)').text();
         const status = row.find('td:eq(4)').text();
 
-        let html = `
-            <div class="user-detail-row"><strong>Username</strong> ${username}</div>
-            <div class="user-detail-row"><strong>Email</strong> ${email}</div>
-            <div class="user-detail-row"><strong>Role</strong> ${role}</div>
-            <div class="user-detail-row"><strong>Joined</strong> ${joined}</div>
-            <div class="user-detail-row"><strong>Status</strong> ${status}</div>
-        `;
-
-        $('#user-details-content').html(html);
-        $('#user-details-modal').removeClass('hidden').hide().fadeIn(300);
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_get_user_details',
+                nonce: wshc_dashboard_obj.nonce,
+                user_id: userId
+            },
+            success: function(response) {
+                if (response.success) {
+                    const u = response.data;
+                    let html = `
+                        <div class="user-detail-row"><strong>Name</strong> ${u.first_name} ${u.last_name}</div>
+                        <div class="user-detail-row"><strong>Username</strong> ${u.user_login}</div>
+                        <div class="user-detail-row"><strong>Email</strong> ${u.user_email}</div>
+                        <div class="user-detail-row"><strong>Role</strong> ${role}</div>
+                        <div class="user-detail-row"><strong>Joined</strong> ${joined}</div>
+                        <div class="user-detail-row"><strong>Status</strong> ${status}</div>
+                    `;
+                    $('#user-details-content').html(html);
+                    $('#user-details-modal').removeClass('hidden').hide().fadeIn(300);
+                }
+            }
+        });
     });
 
     $(document).on('click', '#close-details-modal', function() {
@@ -184,8 +198,6 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.edit-user', function() {
         const userId = $(this).data('id');
         const row = $(this).closest('tr');
-        const username = row.find('td:eq(0)').text();
-        const email = row.find('td:eq(1)').text();
         const roleText = row.find('.role-capsule').text();
         
         const roleMap = {
@@ -194,13 +206,29 @@ jQuery(document).ready(function($) {
             'WSHC Administrator': 'wshc_administrator'
         };
 
-        $('#modal-title').text('EDIT ACCOUNT');
-        $('#form-user-id').val(userId);
-        $('#form-username').val(username);
-        $('#form-email').val(email);
-        $('#form-role').val(roleMap[roleText] || 'wshc_member');
-        $('#form-password').val('');
-        $('#user-modal').removeClass('hidden').hide().fadeIn(300);
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_get_user_details',
+                nonce: wshc_dashboard_obj.nonce,
+                user_id: userId
+            },
+            success: function(response) {
+                if (response.success) {
+                    const u = response.data;
+                    $('#modal-title').text('EDIT ACCOUNT');
+                    $('#form-user-id').val(userId);
+                    $('#form-first-name').val(u.first_name);
+                    $('#form-last-name').val(u.last_name);
+                    $('#form-username').val(u.user_login);
+                    $('#form-email').val(u.user_email);
+                    $('#form-role').val(roleMap[roleText] || 'wshc_member');
+                    $('#form-password').val('');
+                    $('#user-modal').removeClass('hidden').hide().fadeIn(300);
+                }
+            }
+        });
     });
 
     $(document).on('click', '#close-modal', function() {

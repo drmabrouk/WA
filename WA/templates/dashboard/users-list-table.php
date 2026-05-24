@@ -82,6 +82,16 @@
         <h2 id="modal-title">ADD NEW USER</h2>
         <form id="wshc-user-form">
             <input type="hidden" name="user_id" id="form-user-id">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="wshc-auth-form-group">
+                    <label>First Name</label>
+                    <input type="text" name="first_name" id="form-first-name">
+                </div>
+                <div class="wshc-auth-form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="last_name" id="form-last-name">
+                </div>
+            </div>
             <div class="wshc-auth-form-group">
                 <label>Username</label>
                 <input type="text" name="username" id="form-username" required>
