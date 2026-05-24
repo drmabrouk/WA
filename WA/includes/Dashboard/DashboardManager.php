@@ -39,10 +39,14 @@ class DashboardManager {
             exit;
         }
 
+        $current_section = isset($_GET['section']) ? sanitize_text_field($_GET['section']) : 'dashboard-overview';
         $stats = $this->get_dashboard_stats();
 
         ob_start();
-        $this->load_template('dashboard/layout', ['stats' => $stats]);
+        $this->load_template('dashboard/layout', [
+            'stats'           => $stats,
+            'current_section' => $current_section
+        ]);
         return ob_get_clean();
     }
 
