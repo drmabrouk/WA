@@ -20,6 +20,15 @@ class AuthManager {
         add_shortcode('wshc_login_form', [$this, 'render_auth_container']);
         add_shortcode('wshc_registration_form', [$this, 'render_auth_container']);
         add_shortcode('wshc_forgot_password_form', [$this, 'render_auth_container']);
+
+        add_filter('auth_cookie_expiration', [$this, 'extend_login_session'], 10, 3);
+    }
+
+    /**
+     * Extend login session to 30 days.
+     */
+    public function extend_login_session($expiration, $user_id, $remember) {
+        return 30 * DAY_IN_SECONDS;
     }
 
     /**

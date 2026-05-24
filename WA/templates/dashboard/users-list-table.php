@@ -115,6 +115,7 @@
             <div class="wshc-auth-grid">
                 <div class="wshc-auth-form-group">
                     <input type="password" name="password" id="form-password" placeholder="Password (8-20 chars)" minlength="8" maxlength="20">
+                    <span class="password-toggle dashicons dashicons-visibility"></span>
                 </div>
                 <div class="wshc-auth-form-group">
                     <select name="role" id="form-role" required>
