@@ -3,21 +3,28 @@ $current_user = wp_get_current_user();
 $roles = $current_user->roles;
 $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'], $roles[0])) : 'User';
 $base_url = home_url('/id');
+
+// Dynamic Branding
+$admin_roles = ['administrator', 'wshc_secretary_general', 'wshc_regional_coordinator', 'wshc_programs_manager'];
+$system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY ACCOUNT';
 ?>
 <div class="wshc-dashboard-wrapper">
     <!-- Top Navbar -->
     <nav class="wshc-top-nav">
         <div class="nav-left">
             <button id="sidebar-toggle" class="sidebar-btn"><span class="dashicons dashicons-menu"></span></button>
-            <span class="system-title">Management System</span>
+            <span class="system-title"><?php echo esc_html($system_title); ?></span>
         </div>
         <div class="nav-right">
             <div class="user-profile-stack">
                 <span class="user-name"><?php echo esc_html($current_user->display_name); ?></span>
                 <span class="role-capsule rank-capsule"><?php echo esc_html($role_label); ?></span>
             </div>
-            <a href="<?php echo wp_logout_url(home_url('/login')); ?>" class="logout-icon-link" title="Logout">
-                <span class="dashicons dashicons-exit"></span>
+            <div class="user-avatar-wrap">
+                <?php echo get_avatar($current_user->ID, 40); ?>
+            </div>
+            <a href="<?php echo wp_logout_url(home_url('/login')); ?>" class="logout-icon-link circular" title="Logout">
+                <span class="dashicons dashicons-marker"></span>
             </a>
         </div>
     </nav>
