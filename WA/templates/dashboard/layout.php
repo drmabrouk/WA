@@ -9,7 +9,7 @@ $base_url = home_url('/wshc-dashboard');
     <nav class="wshc-top-nav">
         <div class="nav-left">
             <button id="sidebar-toggle" class="sidebar-btn"><span class="dashicons dashicons-menu"></span></button>
-            <span class="system-title">WSHC Management System</span>
+            <span class="system-title">Management System</span>
         </div>
         <div class="nav-right">
             <div class="user-profile-stack">

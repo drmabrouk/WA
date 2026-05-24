@@ -244,6 +244,7 @@
     gap: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     transition: var(--wshc-transition);
+    border-radius: 12px;
 }
 
 .stat-card:hover {
@@ -293,6 +294,7 @@
     padding: 30px;
     border: 1px solid var(--wshc-gray-200);
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border-radius: 12px;
 }
 
 .content-panel.no-padding {
@@ -314,6 +316,8 @@
     border-collapse: collapse;
     background: var(--wshc-white);
     border: 1px solid var(--wshc-gray-200);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .wshc-table th, .wshc-table td {
@@ -358,6 +362,7 @@
     background: var(--wshc-white);
     outline: none;
     transition: var(--wshc-transition);
+    border-radius: 8px;
 }
 
 .search-filter input:focus, .search-filter select:focus {
@@ -378,6 +383,7 @@
     justify-content: center;
     transition: var(--wshc-transition);
     padding: 0;
+    border-radius: 8px;
 }
 
 .btn-icon {
@@ -475,6 +481,7 @@
     max-width: 480px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     position: relative;
+    border-radius: 16px;
 }
 
 .wshc-modal-content h2 {
