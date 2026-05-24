@@ -171,6 +171,10 @@ class AuthManager {
      * Render the unified auth container.
      */
     public function render_auth_container() {
+        if (is_user_logged_in()) {
+            wp_redirect(home_url('/id'));
+            exit;
+        }
         return $this->load_template('auth/container');
     }
 

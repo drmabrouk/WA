@@ -5,10 +5,11 @@
         <div class="wshc-message hidden"></div>
         <form id="wshc-login-form">
             <div class="wshc-auth-form-group">
-                <input type="text" name="username" placeholder="Username or Email" required>
+                <input type="text" name="username" placeholder="Username or Email" required minlength="4">
             </div>
             <div class="wshc-auth-form-group">
-                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="password" placeholder="Password" required minlength="8" maxlength="20">
+                <span class="password-toggle dashicons dashicons-visibility"></span>
             </div>
             <button type="submit" class="wshc-auth-btn">Sign In</button>
             <?php wp_nonce_field('wshc_auth_nonce', 'nonce'); ?>
@@ -32,16 +33,18 @@
                     <input type="text" name="last_name" placeholder="Last Name" required>
                 </div>
                 <div class="wshc-auth-form-group">
-                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="text" name="username" placeholder="Username" required minlength="4">
                 </div>
                 <div class="wshc-auth-form-group">
                     <input type="email" name="email" placeholder="Email Address" required>
                 </div>
                 <div class="wshc-auth-form-group">
-                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="password" name="password" placeholder="Password" required minlength="8" maxlength="20">
+                    <span class="password-toggle dashicons dashicons-visibility"></span>
                 </div>
                 <div class="wshc-auth-form-group">
-                    <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+                    <input type="password" name="confirm_password" placeholder="Confirm Password" required minlength="8" maxlength="20">
+                    <span class="password-toggle dashicons dashicons-visibility"></span>
                 </div>
             </div>
             <button type="submit" class="wshc-auth-btn">Register</button>
@@ -78,7 +81,8 @@
                 <input type="text" name="otp" placeholder="Enter OTP" required>
             </div>
             <div class="wshc-auth-form-group">
-                <input type="password" name="new_password" placeholder="New Password" required>
+                <input type="password" name="new_password" placeholder="New Password" required minlength="8" maxlength="20">
+                <span class="password-toggle dashicons dashicons-visibility"></span>
             </div>
             <button type="submit" class="wshc-auth-btn">Reset Password</button>
             <?php wp_nonce_field('wshc_auth_nonce', 'nonce'); ?>

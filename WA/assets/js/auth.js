@@ -28,6 +28,18 @@ jQuery(document).ready(function($) {
         switchForm($(this).data('target'));
     });
 
+    // Password Toggle
+    $(document).on('click', '.password-toggle', function() {
+        const input = $(this).siblings('input');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            $(this).removeClass('dashicons-visibility').addClass('dashicons-hidden');
+        } else {
+            input.attr('type', 'password');
+            $(this).removeClass('dashicons-hidden').addClass('dashicons-visibility');
+        }
+    });
+
     // Handle Login
     $(document).on('submit', '#wshc-login-form', function(e) {
         e.preventDefault();

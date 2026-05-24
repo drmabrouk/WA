@@ -130,6 +130,7 @@ $base_url = home_url('/id');
 
                 <div class="settings-tabs">
                     <button class="settings-tab active" data-tab="design-settings">Design Settings</button>
+                    <button class="settings-tab" data-tab="auth-config">Auth Configuration</button>
                     <button class="settings-tab" data-tab="system-data">System Data</button>
                 </div>
 
@@ -138,6 +139,28 @@ $base_url = home_url('/id');
                         <div class="content-panel">
                             <h3>Design Configuration</h3>
                             <p>Configure the visual appearance and branding of the management system.</p>
+                        </div>
+                    </div>
+                    <div id="tab-auth-config" class="settings-pane hidden">
+                        <div class="content-panel">
+                            <h3>Authentication Control Panel</h3>
+                            <div class="settings-row" style="margin-bottom: 25px;">
+                                <label class="switch-label">Enable Registration System</label>
+                                <input type="checkbox" id="enable-reg" checked>
+                            </div>
+                            <div class="settings-row" style="margin-bottom: 25px;">
+                                <label class="switch-label">Enable Login System</label>
+                                <input type="checkbox" id="enable-login" checked>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>OTP Confirmation Email Message</label>
+                                <textarea id="otp-message" style="height: 120px;" placeholder="Your OTP code is: {otp}"></textarea>
+                            </div>
+                            <div class="wshc-auth-form-group">
+                                <label>Welcome Email Message</label>
+                                <textarea id="welcome-message" style="height: 120px;" placeholder="Welcome to our system!"></textarea>
+                            </div>
+                            <button id="save-auth-settings" class="wshc-auth-btn" style="width: auto;">Save Configurations</button>
                         </div>
                     </div>
                     <div id="tab-system-data" class="settings-pane hidden">
