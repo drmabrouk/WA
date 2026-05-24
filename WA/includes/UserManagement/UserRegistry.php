@@ -49,19 +49,19 @@ class UserRegistry {
     public function list_users() {
         check_ajax_referer('wshc_dashboard_nonce', 'nonce');
 
-        if (!current_user_can('manage_wshc_users')) {
+        if (!current_user_can('manage_wshc_users') && !current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Permission denied.']);
         }
 
-        $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+        $paged = isset($_POST['paged']) ? max(1, intval($_POST['paged'])) : 1;
         $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
         $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : '';
         $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : '';
 
         $args = [
             'number' => 10,
-            'paged'  => $paged,
-            'search' => '*' . $search . '*',
+            'offset' => ($paged - 1) * 10,
+            'search' => !empty($search) ? '*' . $search . '*' : '',
             'role'   => $role,
         ];
 
