@@ -35,14 +35,10 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
                         <span class="nav-icon dashicons dashicons-groups"></span> User Management
                     </a>
                 </li>
-                <li class="has-submenu">
-                    <a href="#" class="nav-link submenu-toggle">
-                        <span class="nav-icon dashicons dashicons-admin-settings"></span> Settings <span class="arrow-icon dashicons dashicons-arrow-down-alt2"></span>
+                <li>
+                    <a href="#" class="nav-link" data-section="settings-system">
+                        <span class="nav-icon dashicons dashicons-admin-settings"></span> Settings
                     </a>
-                    <ul class="submenu">
-                        <li><a href="#" class="nav-link sub-link" data-section="design-settings">Design Settings</a></li>
-                        <li><a href="#" class="nav-link sub-link" data-section="system-data">System Data</a></li>
-                    </ul>
                 </li>
             </ul>
         </aside>
@@ -125,19 +121,28 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
                 </div>
             </div>
 
-            <!-- Design Settings Section -->
-            <div id="section-design-settings" class="dashboard-section hidden">
-                <h1 class="section-title">DESIGN SETTINGS</h1>
-                <div class="content-panel">
-                    <p>Configure the visual appearance and branding of the management system.</p>
-                </div>
-            </div>
+            <!-- Unified Settings Section -->
+            <div id="section-settings-system" class="dashboard-section hidden">
+                <h1 class="section-title">SYSTEM SETTINGS</h1>
 
-            <!-- System Data Section -->
-            <div id="section-system-data" class="dashboard-section hidden">
-                <h1 class="section-title">SYSTEM DATA</h1>
-                <div class="content-panel">
-                    <p>Manage and export system-level data, backups, and logs.</p>
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="design-settings">Design Settings</button>
+                    <button class="settings-tab" data-tab="system-data">System Data</button>
+                </div>
+
+                <div class="settings-tab-content">
+                    <div id="tab-design-settings" class="settings-pane active">
+                        <div class="content-panel">
+                            <h3>Design Configuration</h3>
+                            <p>Configure the visual appearance and branding of the management system.</p>
+                        </div>
+                    </div>
+                    <div id="tab-system-data" class="settings-pane hidden">
+                        <div class="content-panel">
+                            <h3>System Data Management</h3>
+                            <p>Manage and export system-level data, backups, and logs.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

@@ -91,6 +91,17 @@ jQuery(document).ready(function($) {
         loadUserManagement(1);
     });
 
+    // Settings Tabs Switching
+    $(document).on('click', '.settings-tab', function() {
+        const tabId = $(this).data('tab');
+
+        $('.settings-tab').removeClass('active');
+        $(this).addClass('active');
+
+        $('.settings-pane').addClass('hidden');
+        $(`#tab-${tabId}`).removeClass('hidden');
+    });
+
     $(document).on('click', '.toggle-status', function() {
         const userId = $(this).data('id');
         const btn = $(this);
