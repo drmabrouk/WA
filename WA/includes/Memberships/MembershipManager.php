@@ -37,17 +37,57 @@ class MembershipManager {
             wp_send_json_error(['message' => 'You already have a pending application.']);
         }
 
-        $wpdb->insert($table, [
-            'user_id'     => $user_id,
-            'full_name'   => sanitize_text_field($_POST['full_name']),
-            'email'       => sanitize_email($_POST['email']),
-            'nationality' => sanitize_text_field($_POST['nationality']),
-            'status'      => 'pending'
-        ]);
+        $data = [
+            'user_id'               => $user_id,
+            'full_name'             => sanitize_text_field($_POST['full_name']),
+            'dob'                   => sanitize_text_field($_POST['dob']),
+            'gender'                => sanitize_text_field($_POST['gender']),
+            'nationality'           => sanitize_text_field($_POST['nationality']),
+            'email'                 => sanitize_email($_POST['email']),
+            'phone'                 => sanitize_text_field($_POST['phone']),
+            'degree'                => sanitize_text_field($_POST['degree']),
+            'major'                 => sanitize_text_field($_POST['major']),
+            'institution'           => sanitize_text_field($_POST['institution']),
+            'grad_year'             => intval($_POST['grad_year']),
+            'job_title'             => sanitize_text_field($_POST['job_title']),
+            'employer'              => sanitize_text_field($_POST['employer']),
+            'experience'            => intval($_POST['experience']),
+            'license_number'        => sanitize_text_field($_POST['license_number']),
+            'specialized_certs'     => sanitize_textarea_field($_POST['specialized_certs']),
+            'other_memberships'     => sanitize_textarea_field($_POST['other_memberships']),
+            'research_publications' => sanitize_textarea_field($_POST['research_publications']),
+            'interests'             => implode(', ', array_map('sanitize_text_field', (array)$_POST['interests'])),
+            'status'                => 'pending'
+        ];
 
-        \WSHC\UserManagement\ActivityLogger::log($user_id, 'membership_apply', 'Submitted membership application');
+        // Handle File Uploads (Digital Copy & CV)
+        if (!empty($_FILES['cert_file']['name'])) {
+            $data['cert_file_url'] = $this->handle_file_upload('cert_file');
+        }
+        if (!empty($_FILES['cv_file']['name'])) {
+            $data['cv_file_url'] = $this->handle_file_upload('cv_file');
+        }
 
-        wp_send_json_success(['message' => 'Application submitted successfully.']);
+        $wpdb->insert($table, $data);
+
+        \WSHC\UserManagement\ActivityLogger::log($user_id, 'membership_apply', 'Submitted 5-step membership application');
+
+        wp_send_json_success(['message' => 'Application submitted successfully. We will review it shortly.']);
+    }
+
+    private function handle_file_upload($key) {
+        if (!function_exists('wp_handle_upload')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+
+        $uploaded_file = $_FILES[$key];
+        $upload_overrides = ['test_form' => false];
+        $movefile = wp_handle_upload($uploaded_file, $upload_overrides);
+
+        if ($movefile && !isset($movefile['error'])) {
+            return $movefile['url'];
+        }
+        return '';
     }
 
     /**

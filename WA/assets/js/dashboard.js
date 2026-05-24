@@ -102,22 +102,79 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $(document).on('submit', '#membership-application-form', function(e) {
+    // Wizard Navigation
+    let currentWizardStep = 1;
+
+    $(document).on('click', '#next-step', function() {
+        if (validateStep(currentWizardStep)) {
+            $(`#pane-${currentWizardStep}`).addClass('hidden');
+            currentWizardStep++;
+            $(`#pane-${currentWizardStep}`).removeClass('hidden');
+            updateWizardUI();
+        }
+    });
+
+    $(document).on('click', '#prev-step', function() {
+        $(`#pane-${currentWizardStep}`).addClass('hidden');
+        currentWizardStep--;
+        $(`#pane-${currentWizardStep}`).removeClass('hidden');
+        updateWizardUI();
+    });
+
+    function updateWizardUI() {
+        $('.wizard-step').removeClass('active completed');
+        for (let i = 1; i <= 5; i++) {
+            if (i < currentWizardStep) $(`.wizard-step[data-step="${i}"]`).addClass('completed');
+            if (i === currentWizardStep) $(`.wizard-step[data-step="${i}"]`).addClass('active');
+        }
+
+        if (currentWizardStep === 1) $('#prev-step').addClass('hidden');
+        else $('#prev-step').removeClass('hidden');
+
+        if (currentWizardStep === 5) {
+            $('#next-step').addClass('hidden');
+            $('#submit-wizard').removeClass('hidden');
+        } else {
+            $('#next-step').removeClass('hidden');
+            $('#submit-wizard').addClass('hidden');
+        }
+    }
+
+    function validateStep(step) {
+        const inputs = $(`#pane-${step} [required]`);
+        let valid = true;
+        inputs.each(function() {
+            if (!$(this).val()) {
+                valid = false;
+                $(this).css('border-color', '#d32f2f');
+            } else {
+                $(this).css('border-color', '');
+            }
+        });
+        return valid;
+    }
+
+    $(document).on('submit', '#membership-application-wizard', function(e) {
         e.preventDefault();
-        const btn = $(this).find('button[type="submit"]');
-        const formData = $(this).serialize();
-        btn.prop('disabled', true).text('SUBMITTING...');
+        const btn = $('#submit-wizard');
+        const formData = new FormData(this);
+        formData.append('action', 'wshc_submit_membership_app');
+        formData.append('nonce', wshc_dashboard_obj.nonce);
+
+        btn.prop('disabled', true).text('PROCESSING...');
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
             type: 'POST',
-            data: formData + '&action=wshc_submit_membership_app&nonce=' + wshc_dashboard_obj.nonce,
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(response) {
                 alert(response.data.message);
                 if (response.success) {
                     window.location.reload();
                 }
-                btn.prop('disabled', false).text('SUBMIT APPLICATION');
+                btn.prop('disabled', false).text('COMPLETE APPLICATION');
             }
         });
     });
