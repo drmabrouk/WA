@@ -2,7 +2,7 @@
 $current_user = wp_get_current_user();
 $roles = $current_user->roles;
 $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'], $roles[0])) : 'User';
-$base_url = home_url('/wshc-dashboard');
+$base_url = home_url('/id');
 ?>
 <div class="wshc-dashboard-wrapper">
     <!-- Top Navbar -->

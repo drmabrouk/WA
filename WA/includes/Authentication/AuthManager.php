@@ -75,7 +75,7 @@ class AuthManager {
 
         wp_send_json_success([
             'message' => 'Login successful. Redirecting...',
-            'redirect' => home_url('/wshc-dashboard')
+            'redirect' => home_url('/id')
         ]);
     }
 
