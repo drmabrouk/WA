@@ -8,9 +8,16 @@
         <input type="text" id="user-search" placeholder="Search by name or email...">
         <select id="role-filter">
             <option value="">All Roles</option>
-            <option value="wshc_administrator">Administrator</option>
-            <option value="wshc_staff">Staff</option>
+            <option value="administrator">Administrator</option>
+            <option value="wshc_secretary_general">Secretary-General</option>
+            <option value="wshc_regional_coordinator">Regional Coordinator</option>
+            <option value="wshc_programs_manager">Programs Manager</option>
+            <option value="wshc_scientific_reviewer">Scientific Reviewer</option>
+            <option value="wshc_fellowship_member">Fellowship Member</option>
+            <option value="wshc_practitioner_member">Practitioner Member</option>
+            <option value="wshc_research_member">Research Member</option>
             <option value="wshc_member">Member</option>
+            <option value="subscriber">Subscriber</option>
         </select>
         <select id="status-filter">
             <option value="">All Status</option>
@@ -111,9 +118,16 @@
             <div class="wshc-auth-form-group">
                 <label>System Role</label>
                 <select name="role" id="form-role" required>
-                    <option value="wshc_member">WSHC Member</option>
-                    <option value="wshc_staff">WSHC Staff</option>
-                    <option value="wshc_administrator">WSHC Administrator</option>
+                    <option value="subscriber">Subscriber</option>
+                    <option value="wshc_member">Member</option>
+                    <option value="wshc_research_member">Research Member</option>
+                    <option value="wshc_practitioner_member">Practitioner Member</option>
+                    <option value="wshc_fellowship_member">Fellowship Member</option>
+                    <option value="wshc_scientific_reviewer">Scientific Reviewer</option>
+                    <option value="wshc_programs_manager">Programs Manager</option>
+                    <option value="wshc_regional_coordinator">Regional Coordinator</option>
+                    <option value="wshc_secretary_general">Secretary-General</option>
+                    <option value="administrator">Administrator</option>
                 </select>
             </div>
             <div class="modal-actions">
