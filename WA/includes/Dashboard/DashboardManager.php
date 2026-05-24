@@ -88,10 +88,15 @@ class DashboardManager {
         ]);
         $suspended_count = $suspended_query->get_total();
 
+        global $wpdb;
+        $table = $wpdb->prefix . 'wshc_membership_applications';
+        $pending_apps = $wpdb->get_var("SELECT COUNT(*) FROM $table WHERE status = 'pending'");
+
         return [
             'total_users'     => $user_count['total_users'],
             'suspended_users' => $suspended_count,
             'active_users'    => $user_count['total_users'] - $suspended_count,
+            'pending_apps'    => $pending_apps,
             'recent_logs'     => \WSHC\UserManagement\ActivityLogger::get_logs(null, 10),
         ];
     }

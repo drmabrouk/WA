@@ -15,6 +15,8 @@ class MembershipManager {
         add_action('wp_ajax_wshc_process_application', [$this, 'process_application']);
         add_action('wp_ajax_wshc_list_memberships', [$this, 'list_memberships']);
         add_action('wp_ajax_wshc_delete_membership', [$this, 'delete_membership']);
+        add_action('wp_ajax_wshc_get_application_details', [$this, 'get_application_details']);
+        add_action('wp_ajax_wshc_send_clarification', [$this, 'send_clarification']);
     }
 
     /**
@@ -43,8 +45,11 @@ class MembershipManager {
             'dob'                   => sanitize_text_field($_POST['dob']),
             'gender'                => sanitize_text_field($_POST['gender']),
             'nationality'           => sanitize_text_field($_POST['nationality']),
+            'country_residence'     => sanitize_text_field($_POST['country_residence']),
+            'city_residence'        => sanitize_text_field($_POST['city_residence']),
             'email'                 => sanitize_email($_POST['email']),
             'phone'                 => sanitize_text_field($_POST['phone']),
+            'phone_secondary'       => sanitize_text_field($_POST['phone_secondary']),
             'degree'                => sanitize_text_field($_POST['degree']),
             'major'                 => sanitize_text_field($_POST['major']),
             'institution'           => sanitize_text_field($_POST['institution']),
@@ -52,6 +57,8 @@ class MembershipManager {
             'job_title'             => sanitize_text_field($_POST['job_title']),
             'employer'              => sanitize_text_field($_POST['employer']),
             'experience'            => intval($_POST['experience']),
+            'work_country'          => sanitize_text_field($_POST['work_country']),
+            'work_state'            => sanitize_text_field($_POST['work_state']),
             'license_number'        => sanitize_text_field($_POST['license_number']),
             'specialized_certs'     => sanitize_textarea_field($_POST['specialized_certs']),
             'other_memberships'     => sanitize_textarea_field($_POST['other_memberships']),
@@ -60,12 +67,15 @@ class MembershipManager {
             'status'                => 'pending'
         ];
 
-        // Handle File Uploads (Digital Copy & CV)
+        // Handle File Uploads
         if (!empty($_FILES['cert_file']['name'])) {
             $data['cert_file_url'] = $this->handle_file_upload('cert_file');
         }
         if (!empty($_FILES['cv_file']['name'])) {
             $data['cv_file_url'] = $this->handle_file_upload('cv_file');
+        }
+        if (!empty($_FILES['verification_file']['name'])) {
+            $data['verification_file_url'] = $this->handle_file_upload('verification_file');
         }
 
         $wpdb->insert($table, $data);
@@ -110,7 +120,7 @@ class MembershipManager {
             <thead>
                 <tr>
                     <th>Full Name</th>
-                    <th>Email</th>
+                    <th>Degree/Major</th>
                     <th>Nationality</th>
                     <th>Date</th>
                     <th style="text-align: right;">Actions</th>
@@ -120,10 +130,13 @@ class MembershipManager {
                 <?php foreach ($apps as $app) : ?>
                     <tr>
                         <td><strong><?php echo esc_html($app->full_name); ?></strong></td>
-                        <td><?php echo esc_html($app->email); ?></td>
+                        <td style="font-size: 11px;"><?php echo esc_html($app->degree . ' in ' . $app->major); ?></td>
                         <td><?php echo esc_html($app->nationality); ?></td>
                         <td><?php echo date('M d, Y', strtotime($app->created_at)); ?></td>
                         <td style="text-align: right;">
+                            <button class="action-btn view-app" data-id="<?php echo $app->id; ?>" title="View Dossier" style="background:#444;">
+                                <span class="dashicons dashicons-id"></span>
+                            </button>
                             <button class="action-btn process-app" data-id="<?php echo $app->id; ?>" data-action="approve" title="Approve">
                                 <span class="dashicons dashicons-yes"></span>
                             </button>
@@ -220,6 +233,12 @@ class MembershipManager {
                         <td><?php echo esc_html($nationality); ?></td>
                         <td><?php echo date('M d, Y', strtotime($expiry)); ?></td>
                         <td style="text-align: right;">
+                            <?php
+                            $is_suspended = get_user_meta($user->ID, 'wshc_suspended', true);
+                            ?>
+                            <button class="action-btn toggle-status" data-id="<?php echo $user->ID; ?>" title="<?php echo $is_suspended ? 'Reactivate' : 'Temporarily Suspend'; ?>" style="background:<?php echo $is_suspended ? '#2e7d32' : '#f57c00'; ?>;">
+                                <span class="dashicons <?php echo $is_suspended ? 'dashicons-yes' : 'dashicons-warning'; ?>"></span>
+                            </button>
                             <button class="action-btn delete-membership" data-id="<?php echo $user->ID; ?>" title="Delete Membership" style="background:#d32f2f;">
                                 <span class="dashicons dashicons-trash"></span>
                             </button>
@@ -258,6 +277,42 @@ class MembershipManager {
         \WSHC\UserManagement\ActivityLogger::log(get_current_user_id(), 'membership_delete', "Deleted membership for user ID: $user_id. Reverted to Visitor.");
 
         wp_send_json_success(['message' => 'Membership deleted and user reverted to Visitor status.']);
+    }
+
+    public function get_application_details() {
+        check_ajax_referer('wshc_dashboard_nonce', 'nonce');
+
+        if (!current_user_can('administrator')) {
+            wp_send_json_error(['message' => 'Permission denied.']);
+        }
+
+        global $wpdb;
+        $app_id = intval($_POST['app_id']);
+        $table = $wpdb->prefix . 'wshc_membership_applications';
+        $app = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $app_id));
+
+        if (!$app) wp_send_json_error(['message' => 'Application not found.']);
+
+        wp_send_json_success($app);
+    }
+
+    public function send_clarification() {
+        check_ajax_referer('wshc_dashboard_nonce', 'nonce');
+
+        if (!current_user_can('administrator')) {
+            wp_send_json_error(['message' => 'Permission denied.']);
+        }
+
+        global $wpdb;
+        $app_id = intval($_POST['app_id']);
+        $note = sanitize_textarea_field($_POST['note']);
+        $table = $wpdb->prefix . 'wshc_membership_applications';
+
+        $wpdb->update($table, ['admin_note' => $note], ['id' => $app_id]);
+
+        \WSHC\UserManagement\ActivityLogger::log(get_current_user_id(), 'clarification_sent', "Sent clarification request to applicant ID: $app_id");
+
+        wp_send_json_success(['message' => 'Clarification dispatch sent to applicant dashboard.']);
     }
 
     private function generate_membership_id() {

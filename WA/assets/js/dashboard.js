@@ -70,6 +70,9 @@ jQuery(document).ready(function($) {
         const id = $(this).data('id');
         const action = $(this).data('action');
         const btn = $(this);
+
+        if (action === 'reject' && !confirm('Are you sure you want to REJECT this application?')) return;
+
         btn.prop('disabled', true);
 
         $.ajax({
@@ -83,7 +86,9 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
+                    $('#app-dossier-modal').addClass('hidden');
                     loadMembershipApplications();
+                    showNotification(action.toUpperCase() + 'ED', response.data.message);
                 } else {
                     alert(response.data.message);
                     btn.prop('disabled', false);
@@ -92,8 +97,95 @@ jQuery(document).ready(function($) {
         });
     });
 
+    let currentAppId = null;
+    $(document).on('click', '.view-app', function() {
+        const id = $(this).data('id');
+        currentAppId = id;
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_get_application_details',
+                nonce: wshc_dashboard_obj.nonce,
+                app_id: id
+            },
+            success: function(response) {
+                if (response.success) {
+                    const app = response.data;
+                    let html = `
+                        <div class="dossier-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="dossier-section">
+                                <h4 style="border-bottom: 1px solid #000; padding-bottom: 5px;">PERSONAL</h4>
+                                <p><strong>Full Name:</strong> ${app.full_name}</p>
+                                <p><strong>DOB:</strong> ${app.dob}</p>
+                                <p><strong>Gender:</strong> ${app.gender}</p>
+                                <p><strong>Nationality:</strong> ${app.nationality}</p>
+                                <p><strong>Residence:</strong> ${app.city_residence}, ${app.country_residence}</p>
+                                <p><strong>Email:</strong> ${app.email}</p>
+                                <p><strong>Phone:</strong> ${app.phone}</p>
+                            </div>
+                            <div class="dossier-section">
+                                <h4 style="border-bottom: 1px solid #000; padding-bottom: 5px;">ACADEMIC</h4>
+                                <p><strong>Degree:</strong> ${app.degree}</p>
+                                <p><strong>Major:</strong> ${app.major}</p>
+                                <p><strong>Institution:</strong> ${app.institution}</p>
+                                <p><strong>Year:</strong> ${app.grad_year}</p>
+                                <p><strong>Certificate:</strong> ${app.cert_file_url ? `<a href="${app.cert_file_url}" target="_blank">View File</a>` : 'Not Provided'}</p>
+                                <p><strong>Verification:</strong> ${app.verification_file_url ? `<a href="${app.verification_file_url}" target="_blank">View DataFlow</a>` : 'Not Provided'}</p>
+                            </div>
+                            <div class="dossier-section">
+                                <h4 style="border-bottom: 1px solid #000; padding-bottom: 5px;">PROFESSIONAL</h4>
+                                <p><strong>Job Title:</strong> ${app.job_title}</p>
+                                <p><strong>Employer:</strong> ${app.employer}</p>
+                                <p><strong>Experience:</strong> ${app.experience} Years</p>
+                                <p><strong>Location:</strong> ${app.work_state}, ${app.work_country}</p>
+                                <p><strong>License:</strong> ${app.license_number || 'N/A'}</p>
+                                <p><strong>CV:</strong> ${app.cv_file_url ? `<a href="${app.cv_file_url}" target="_blank">Download CV</a>` : 'Not Provided'}</p>
+                            </div>
+                            <div class="dossier-section">
+                                <h4 style="border-bottom: 1px solid #000; padding-bottom: 5px;">RESEARCH & MISC</h4>
+                                <p><strong>Interests:</strong> ${app.interests}</p>
+                                <p><strong>Special Certs:</strong> ${app.specialized_certs || 'None'}</p>
+                                <p><strong>Publications:</strong> ${app.research_publications || 'None'}</p>
+                            </div>
+                        </div>
+                    `;
+                    $('#app-dossier-content').html(html);
+                    $('#admin-clarification-note').val(app.admin_note || '');
+                    $('#app-dossier-modal').removeClass('hidden').hide().fadeIn(300);
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#send-clarification-btn', function() {
+        const note = $('#admin-clarification-note').val();
+        if (!note) return alert('Please enter a note for the applicant.');
+
+        const btn = $(this);
+        btn.prop('disabled', true).text('DISPATCHING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_send_clarification',
+                nonce: wshc_dashboard_obj.nonce,
+                app_id: currentAppId,
+                note: note
+            },
+            success: function(response) {
+                btn.prop('disabled', false).text('Dispatch Clarification');
+                if (response.success) {
+                    showNotification('DISPATCH SENT', response.data.message);
+                }
+            }
+        });
+    });
+
     $(document).on('click', '.delete-membership', function() {
-        if (!confirm('Are you sure you want to delete this membership? User will revert to Visitor.')) return;
+        if (!confirm('Are you sure you want to PERMANENTLY SUSPEND/DELETE this membership record? The user will be reverted to Visitor status.')) return;
         const id = $(this).data('id');
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -176,7 +268,7 @@ jQuery(document).ready(function($) {
 
     function updateWizardUI() {
         $('.wizard-step').removeClass('active completed');
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 6; i++) {
             if (i < currentWizardStep) $(`.wizard-step[data-step="${i}"]`).addClass('completed');
             if (i === currentWizardStep) $(`.wizard-step[data-step="${i}"]`).addClass('active');
         }
@@ -184,7 +276,7 @@ jQuery(document).ready(function($) {
         if (currentWizardStep === 1) $('#prev-step').addClass('hidden');
         else $('#prev-step').removeClass('hidden');
 
-        if (currentWizardStep === 5) {
+        if (currentWizardStep === 6) {
             $('#next-step').addClass('hidden');
             $('#submit-wizard').removeClass('hidden');
         } else {
@@ -207,6 +299,16 @@ jQuery(document).ready(function($) {
         return valid;
     }
 
+    function showNotification(title, message, isSuccess = true) {
+        $('#notification-title').text(title);
+        $('#notification-message').text(message);
+        $('#notification-icon').removeClass('dashicons-yes-alt dashicons-dismiss')
+            .addClass(isSuccess ? 'dashicons-yes-alt' : 'dashicons-dismiss')
+            .css('color', isSuccess ? '#2e7d32' : '#d32f2f');
+
+        $('#wshc-notification-modal').removeClass('hidden').hide().fadeIn(300);
+    }
+
     $(document).on('submit', '#membership-application-wizard', function(e) {
         e.preventDefault();
         const btn = $('#submit-wizard');
@@ -223,10 +325,14 @@ jQuery(document).ready(function($) {
             processData: false,
             contentType: false,
             success: function(response) {
-                alert(response.data.message);
                 if (response.success) {
-                    localStorage.removeItem(storageKey); // Clear draft on success
-                    window.location.reload();
+                    localStorage.removeItem(storageKey);
+                    showNotification('APPLICATION SUBMITTED', 'Your institutional membership request has been dispatched for administrative review.');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                } else {
+                    showNotification('ERROR', response.data.message, false);
                 }
                 btn.prop('disabled', false).text('COMPLETE APPLICATION');
             }
