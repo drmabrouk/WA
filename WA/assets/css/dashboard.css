@@ -83,6 +83,24 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 4px;
+    margin-right: 15px;
+}
+
+.user-avatar-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-avatar-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 .user-name {
@@ -114,13 +132,22 @@
     opacity: 0.8;
 }
 
+.logout-icon-link.circular {
+    background: rgba(255,255,255,0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-left: 15px;
+}
+
 .logout-icon-link .dashicons {
-    font-size: 22px;
+    font-size: 20px;
 }
 
 .logout-icon-link:hover {
     opacity: 1;
-    color: var(--wshc-red-deep);
+    color: var(--wshc-white);
+    background: var(--wshc-red-deep);
 }
 
 .dashboard-body {
