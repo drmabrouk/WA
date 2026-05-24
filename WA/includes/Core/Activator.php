@@ -55,7 +55,7 @@ class Activator {
                 'title'   => 'Registration',
                 'content' => '[wshc_registration_form]',
             ],
-            'wshc-dashboard' => [
+            'id' => [
                 'title'   => 'Dashboard',
                 'content' => '[wshc_dashboard]',
             ],

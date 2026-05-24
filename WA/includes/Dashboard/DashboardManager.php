@@ -18,7 +18,7 @@ class DashboardManager {
      * Enqueue dashboard assets.
      */
     public function enqueue_dashboard_assets() {
-        if (is_page('wshc-dashboard')) {
+        if (is_page('id')) {
             wp_enqueue_style('dashicons');
             wp_enqueue_style('wshc-style', WSHC_PLUGIN_URL . 'assets/css/style.css', [], '1.0.0');
             wp_enqueue_style('wshc-dashboard-style', WSHC_PLUGIN_URL . 'assets/css/dashboard.css', [], '1.0.0');
