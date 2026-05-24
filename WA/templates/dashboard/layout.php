@@ -2,6 +2,7 @@
 $current_user = wp_get_current_user();
 $roles = $current_user->roles;
 $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'], $roles[0])) : 'User';
+$base_url = home_url('/wshc-dashboard');
 ?>
 <div class="wshc-dashboard-wrapper">
     <!-- Top Navbar -->
@@ -26,17 +27,20 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
         <aside class="wshc-sidebar" id="wshc-sidebar">
             <ul class="nav-menu">
                 <li>
-                    <a href="#" class="nav-link active" data-section="dashboard-overview">
+                    <a href="<?php echo esc_url(add_query_arg('section', 'dashboard-overview', $base_url)); ?>"
+                       class="nav-link <?php echo $current_section === 'dashboard-overview' ? 'active' : ''; ?>">
                         <span class="nav-icon dashicons dashicons-dashboard"></span> Dashboard Overview
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link" data-section="user-management">
+                    <a href="<?php echo esc_url(add_query_arg('section', 'user-management', $base_url)); ?>"
+                       class="nav-link <?php echo $current_section === 'user-management' ? 'active' : ''; ?>">
                         <span class="nav-icon dashicons dashicons-groups"></span> User Management
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link" data-section="settings-system">
+                    <a href="<?php echo esc_url(add_query_arg('section', 'settings-system', $base_url)); ?>"
+                       class="nav-link <?php echo $current_section === 'settings-system' ? 'active' : ''; ?>">
                         <span class="nav-icon dashicons dashicons-admin-settings"></span> Settings
                     </a>
                 </li>
@@ -46,7 +50,7 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
         <!-- Main Content -->
         <main class="wshc-content" id="wshc-main-content">
             <!-- Dashboard Overview Section -->
-            <div id="section-dashboard-overview" class="dashboard-section">
+            <div id="section-dashboard-overview" class="dashboard-section <?php echo $current_section === 'dashboard-overview' ? '' : 'hidden'; ?>">
                 <h1 class="section-title">DASHBOARD OVERVIEW</h1>
 
                 <div class="stats-grid">
@@ -114,7 +118,7 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
             </div>
 
             <!-- User Management Section -->
-            <div id="section-user-management" class="dashboard-section hidden">
+            <div id="section-user-management" class="dashboard-section <?php echo $current_section === 'user-management' ? '' : 'hidden'; ?>">
                 <h1 class="section-title">SYSTEM USERS MANAGEMENT</h1>
                 <div id="user-management-container">
                     <!-- User list will be loaded here -->
@@ -122,7 +126,7 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
             </div>
 
             <!-- Unified Settings Section -->
-            <div id="section-settings-system" class="dashboard-section hidden">
+            <div id="section-settings-system" class="dashboard-section <?php echo $current_section === 'settings-system' ? '' : 'hidden'; ?>">
                 <h1 class="section-title">SYSTEM SETTINGS</h1>
 
                 <div class="settings-tabs">
