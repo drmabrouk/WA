@@ -7,9 +7,120 @@ jQuery(document).ready(function($) {
 
     // Initial Load
     const activeSection = $('.dashboard-section:not(.hidden)');
-    if (activeSection.attr('id') === 'section-user-management') {
+    const sectionId = activeSection.attr('id');
+
+    if (sectionId === 'section-user-management') {
         loadUserManagement();
+    } else if (sectionId === 'section-membership-apps') {
+        loadMembershipApplications();
+    } else if (sectionId === 'section-membership-dir') {
+        loadMembershipDirectory();
     }
+
+    function loadMembershipApplications() {
+        const container = $('#membership-apps-container');
+        container.css('opacity', '0.5');
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_list_applications',
+                nonce: wshc_dashboard_obj.nonce
+            },
+            success: function(response) {
+                container.css('opacity', '1');
+                if (response.success) {
+                    container.html(response.data.html);
+                }
+            }
+        });
+    }
+
+    function loadMembershipDirectory() {
+        const container = $('#membership-dir-container');
+        container.css('opacity', '0.5');
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_list_memberships',
+                nonce: wshc_dashboard_obj.nonce
+            },
+            success: function(response) {
+                container.css('opacity', '1');
+                if (response.success) {
+                    container.html(response.data.html);
+                }
+            }
+        });
+    }
+
+    $(document).on('click', '.process-app', function() {
+        const id = $(this).data('id');
+        const action = $(this).data('action');
+        const btn = $(this);
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_process_application',
+                nonce: wshc_dashboard_obj.nonce,
+                app_id: id,
+                process_action: action
+            },
+            success: function(response) {
+                if (response.success) {
+                    loadMembershipApplications();
+                } else {
+                    alert(response.data.message);
+                    btn.prop('disabled', false);
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.delete-membership', function() {
+        if (!confirm('Are you sure you want to delete this membership? User will revert to Visitor.')) return;
+        const id = $(this).data('id');
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_delete_membership',
+                nonce: wshc_dashboard_obj.nonce,
+                user_id: id
+            },
+            success: function(response) {
+                if (response.success) {
+                    loadMembershipDirectory();
+                } else {
+                    alert(response.data.message);
+                }
+            }
+        });
+    });
+
+    $(document).on('submit', '#membership-application-form', function(e) {
+        e.preventDefault();
+        const btn = $(this).find('button[type="submit"]');
+        const formData = $(this).serialize();
+        btn.prop('disabled', true).text('SUBMITTING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: formData + '&action=wshc_submit_membership_app&nonce=' + wshc_dashboard_obj.nonce,
+            success: function(response) {
+                alert(response.data.message);
+                if (response.success) {
+                    window.location.reload();
+                }
+                btn.prop('disabled', false).text('SUBMIT APPLICATION');
+            }
+        });
+    });
 
     function loadUserManagement(paged = 1) {
         const searchInput = $('#user-search');
