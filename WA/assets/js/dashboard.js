@@ -23,10 +23,9 @@ jQuery(document).ready(function($) {
         // If it's a sub-link, also keep the parent active but not strictly 'active' class
         // depending on how CSS is structured. For now, just the link itself.
 
-        $('.dashboard-section').fadeOut(200, function() {
-            $(this).addClass('hidden');
-            $(`#section-${section}`).hide().removeClass('hidden').fadeIn(300);
-        });
+        $('.dashboard-section').addClass('hidden');
+        const nextSection = $(`#section-${section}`);
+        nextSection.removeClass('hidden').hide().fadeIn(300);
 
         if (section === 'user-management') {
             loadUserManagement();
@@ -100,6 +99,49 @@ jQuery(document).ready(function($) {
 
         $('.settings-pane').addClass('hidden');
         $(`#tab-${tabId}`).removeClass('hidden');
+    });
+
+    $(document).on('click', '#export-data-btn', function() {
+        const btn = $(this);
+        btn.prop('disabled', true).text('EXPORTING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_export_data',
+                nonce: wshc_dashboard_obj.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data.message);
+                    console.log('Exported Data (Base64):', response.data.data);
+                } else {
+                    alert(response.data.message);
+                }
+                btn.prop('disabled', false).text('EXPORT SYSTEM DATA');
+            }
+        });
+    });
+
+    $(document).on('click', '#import-data-btn', function() {
+        if (!confirm('Are you sure you want to import data? This may overwrite current settings.')) return;
+
+        const btn = $(this);
+        btn.prop('disabled', true).text('IMPORTING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_import_data',
+                nonce: wshc_dashboard_obj.nonce
+            },
+            success: function(response) {
+                alert(response.data.message);
+                btn.prop('disabled', false).text('IMPORT DATA PACKAGE');
+            }
+        });
     });
 
     $(document).on('click', '.toggle-status', function() {

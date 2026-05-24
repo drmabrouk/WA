@@ -141,6 +141,10 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
                         <div class="content-panel">
                             <h3>System Data Management</h3>
                             <p>Manage and export system-level data, backups, and logs.</p>
+                            <div class="settings-actions" style="margin-top: 20px; display: flex; gap: 15px;">
+                                <button id="export-data-btn" class="wshc-auth-btn" style="width: auto;">Export System Data</button>
+                                <button id="import-data-btn" class="wshc-auth-btn" style="width: auto; background: #666;">Import Data Package</button>
+                            </div>
                         </div>
                     </div>
                 </div>

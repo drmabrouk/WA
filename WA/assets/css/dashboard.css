@@ -224,8 +224,6 @@
     color: var(--wshc-black);
     margin-bottom: 30px;
     text-transform: uppercase;
-    border-bottom: 3px solid var(--wshc-black);
-    padding-bottom: 10px;
     display: inline-block;
 }
 
@@ -483,8 +481,6 @@
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 30px;
-    border-bottom: 3px solid var(--wshc-black);
-    padding-bottom: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
