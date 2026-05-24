@@ -17,6 +17,7 @@ class MembershipManager {
         add_action('wp_ajax_wshc_delete_membership', [$this, 'delete_membership']);
         add_action('wp_ajax_wshc_get_application_details', [$this, 'get_application_details']);
         add_action('wp_ajax_wshc_send_clarification', [$this, 'send_clarification']);
+        add_action('wp_ajax_wshc_download_certificate', [$this, 'download_certificate']);
     }
 
     /**
@@ -274,9 +275,14 @@ class MembershipManager {
         delete_user_meta($user_id, 'wshc_membership_start');
         delete_user_meta($user_id, 'wshc_membership_expiry');
 
-        \WSHC\UserManagement\ActivityLogger::log(get_current_user_id(), 'membership_delete', "Deleted membership for user ID: $user_id. Reverted to Visitor.");
+        // Archive previous application to allow fresh submission
+        global $wpdb;
+        $table = $wpdb->prefix . 'wshc_membership_applications';
+        $wpdb->update($table, ['status' => 'archived'], ['user_id' => $user_id, 'status' => 'approved']);
 
-        wp_send_json_success(['message' => 'Membership deleted and user reverted to Visitor status.']);
+        \WSHC\UserManagement\ActivityLogger::log(get_current_user_id(), 'membership_delete', "Deleted membership for user ID: $user_id. Reverted to Visitor and archived application.");
+
+        wp_send_json_success(['message' => 'Membership deleted and user reverted to Visitor status. Application archived for fresh submission.']);
     }
 
     public function get_application_details() {
@@ -313,6 +319,21 @@ class MembershipManager {
         \WSHC\UserManagement\ActivityLogger::log(get_current_user_id(), 'clarification_sent', "Sent clarification request to applicant ID: $app_id");
 
         wp_send_json_success(['message' => 'Clarification dispatch sent to applicant dashboard.']);
+    }
+
+    public function download_certificate() {
+        if (!is_user_logged_in()) wp_die('Unauthorized');
+
+        $user_id = get_current_user_id();
+        $mid = get_user_meta($user_id, 'wshc_membership_id', true);
+        if (!$mid) wp_die('No active membership found.');
+
+        $pdf = CertificateGenerator::generate($user_id);
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="Membership-Certificate-' . $mid . '.pdf"');
+        echo $pdf;
+        exit;
     }
 
     private function generate_membership_id() {

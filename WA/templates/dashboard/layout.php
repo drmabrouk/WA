@@ -35,7 +35,31 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
         </div>
     </nav>
 
+    <?php
+    $restriction_expiry = get_user_meta(get_current_user_id(), 'wshc_restricted_until', true);
+    $is_restricted_now = $restriction_expiry && (strtotime($restriction_expiry) > time());
+
+    if ($is_restricted_now && !current_user_can('administrator')) :
+        $reason = get_user_meta(get_current_user_id(), 'wshc_restriction_reason', true);
+    ?>
+        <div class="dashboard-body locked-state">
+            <div class="restriction-notice-overlay">
+                <div class="notice-card">
+                    <span class="dashicons dashicons-lock" style="font-size: 60px; width: 60px; height: 60px; color: #d32f2f;"></span>
+                    <h2>MEMBERSHIP PRIVILEGES SUSPENDED</h2>
+                    <p class="restriction-msg">Your access to the professional portal has been restricted by the Council.</p>
+                    <div class="restriction-details">
+                        <div class="detail-bit"><strong>Reason:</strong> <?php echo esc_html($reason ?: 'Policy Violation'); ?></div>
+                        <div class="detail-bit"><strong>Restricted Until:</strong> <?php echo date('M d, Y', strtotime($restriction_expiry)); ?></div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 13px; color: #666;">You are prohibited from applying for new membership or accessing professional tools until the restriction period expires.</p>
+                    <a href="<?php echo wp_logout_url(home_url('/login')); ?>" class="wshc-auth-btn" style="width: auto; padding: 10px 30px; background: #444; margin-top: 30px;">Logout Safely</a>
+                </div>
+            </div>
+        </div>
+    <?php else : ?>
     <div class="dashboard-body">
+        <?php endif; // End restriction check ?>
         <!-- Sidebar -->
         <aside class="wshc-sidebar" id="wshc-sidebar">
             <ul class="nav-menu">
@@ -250,20 +274,29 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
                 <?php
                 global $wpdb;
                 $user_id = get_current_user_id();
-                $application = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wshc_membership_applications WHERE user_id = %d ORDER BY created_at DESC LIMIT 1", $user_id));
+                $application = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wshc_membership_applications WHERE user_id = %d AND status != 'archived' ORDER BY created_at DESC LIMIT 1", $user_id));
 
                 if ($application) :
-                    $statuses = ['pending' => 1, 'approved' => 2, 'rejected' => 2];
-                    $current_status_step = $statuses[$application->status] ?? 1;
+                    $has_note = !empty($application->admin_note);
+                    $is_restricted = get_user_meta($user_id, 'wshc_restricted', true);
+
+                    $status_step = 1; // Submitted
+                    if ($application->status === 'pending') {
+                        $status_step = $has_note ? 3 : 2; // 2: Under Review, 3: Needs Correction
+                    } elseif ($application->status === 'approved') {
+                        $status_step = 4;
+                    } elseif ($application->status === 'rejected') {
+                        $status_step = 5;
+                    }
                 ?>
                     <div class="content-panel" style="margin-bottom: 30px;">
-                        <h3>Application Tracking Timeline</h3>
+                        <h3>Real-time Application Status Tracker</h3>
                         <div class="wizard-progress tracking">
-                            <div class="wizard-step completed">1. Submitted</div>
-                            <div class="wizard-step <?php echo $application->status === 'pending' ? 'active' : 'completed'; ?>">2. Under Review</div>
-                            <div class="wizard-step <?php echo $application->status === 'approved' ? 'active' : ''; ?> <?php echo $application->status === 'rejected' ? 'rejected' : ''; ?>">
-                                3. <?php echo $application->status === 'rejected' ? 'Rejected' : 'Approved'; ?>
-                            </div>
+                            <div class="wizard-step <?php echo $status_step >= 1 ? 'completed' : ''; ?>">1. Submitted</div>
+                            <div class="wizard-step <?php echo $status_step == 2 ? 'active' : ($status_step > 2 ? 'completed' : ''); ?>">2. Under Review</div>
+                            <div class="wizard-step <?php echo ($status_step == 3) ? 'active warning' : ($status_step > 3 ? 'completed' : ''); ?>">3. Correction</div>
+                            <div class="wizard-step <?php echo $status_step == 4 ? 'active success' : ($status_step > 4 ? 'completed' : ''); ?>">4. Approved</div>
+                            <div class="wizard-step <?php echo $status_step == 5 ? 'rejected' : ''; ?>">5. Restricted</div>
                         </div>
                         <p style="font-size: 13px; color: #666; margin-top: 15px;">
                             Your application was submitted on <?php echo date('M d, Y', strtotime($application->created_at)); ?>.
@@ -513,6 +546,9 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
                         <div style="margin-bottom: 20px;">
                             <span class="role-capsule rank-capsule"><?php echo esc_html($role_label); ?></span>
                             <button class="wshc-auth-btn edit-my-profile" style="width: auto; padding: 5px 15px; font-size: 10px; margin-left: 10px;">Edit Profile</button>
+                            <?php if (get_user_meta($current_user->ID, 'wshc_membership_id', true)) : ?>
+                                <a href="<?php echo admin_url('admin-ajax.php?action=wshc_download_certificate'); ?>" class="wshc-auth-btn" style="width: auto; padding: 5px 15px; font-size: 10px; margin-left: 10px; background: #2e7d32; text-decoration: none;">Download Certificate</a>
+                            <?php endif; ?>
                         </div>
 
                         <div class="profile-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
@@ -651,23 +687,26 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
 
         <div id="suspension-advanced-fields" class="hidden">
             <div class="wshc-auth-form-group">
-                <label>Reason for Suspension</label>
-                <select id="suspension-reason">
-                    <option value="Policy Violation">Policy Violation</option>
-                    <option value="Spamming Activity">Spamming Activity</option>
-                    <option value="Suspicious Login">Suspicious Login</option>
-                    <option value="Unprofessional Behavior">Unprofessional Behavior</option>
-                    <option value="Account Compromised">Account Compromised</option>
-                    <option value="Duplicate Account">Duplicate Account</option>
-                    <option value="Non-Payment">Non-Payment</option>
-                    <option value="Requested by User">Requested by User</option>
-                    <option value="Inactivity">Inactivity</option>
-                    <option value="Under Investigation">Under Investigation</option>
+                <label>Action Type</label>
+                <select id="action-type-selector">
+                    <option value="suspend">General Suspension</option>
+                    <option value="restrict">Strict Time-based Restriction</option>
                 </select>
             </div>
             <div class="wshc-auth-form-group">
-                <label>Suspension Duration (Days)</label>
-                <input type="number" id="suspension-duration" placeholder="e.g. 30" min="1">
+                <label>Reason for Action</label>
+                <select id="suspension-reason">
+                    <option value="Policy Violation">Policy Violation</option>
+                    <option value="Spamming Activity">Spamming Activity</option>
+                    <option value="Unprofessional Behavior">Unprofessional Behavior</option>
+                    <option value="Account Compromised">Account Compromised</option>
+                    <option value="Non-Payment">Non-Payment</option>
+                    <option value="Under Investigation">Under Investigation</option>
+                </select>
+            </div>
+            <div class="wshc-auth-form-group" id="duration-group">
+                <label>Restriction Duration (Days)</label>
+                <input type="number" id="suspension-duration" placeholder="e.g. 30" min="1" value="30">
             </div>
         </div>
 

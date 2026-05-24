@@ -498,11 +498,20 @@ jQuery(document).ready(function($) {
         $('#status-user-modal').removeClass('hidden').hide().fadeIn(200);
     });
 
+    $(document).on('change', '#action-type-selector', function() {
+        if ($(this).val() === 'restrict') {
+            $('#duration-group').removeClass('hidden');
+        } else {
+            $('#duration-group').addClass('hidden');
+        }
+    });
+
     $('#confirm-status-btn').on('click', function() {
         const userId = $('#status-user-id').val();
         const btn = $(this);
         const reason = $('#suspension-reason').val();
         const duration = $('#suspension-duration').val();
+        const actionType = $('#action-type-selector').val();
 
         btn.prop('disabled', true).text('PROCESSING...');
 
@@ -514,12 +523,14 @@ jQuery(document).ready(function($) {
                 nonce: wshc_dashboard_obj.nonce,
                 user_id: userId,
                 reason: reason,
-                duration: duration
+                duration: duration,
+                action_type: actionType
             },
             success: function(response) {
                 btn.prop('disabled', false).text('Confirm Change');
                 $('#status-user-modal').addClass('hidden');
                 if (response.success) {
+                    showNotification('ACCOUNT UPDATED', response.data.message);
                     loadUserManagement();
                 } else {
                     alert(response.data.message);
