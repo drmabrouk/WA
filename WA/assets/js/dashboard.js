@@ -11,10 +11,9 @@ jQuery(document).ready(function($) {
 
     if (sectionId === 'section-user-management') {
         loadUserManagement();
-    } else if (sectionId === 'section-membership-apps') {
-        loadMembershipApplications();
-    } else if (sectionId === 'section-membership-dir') {
+    } else if (sectionId === 'section-membership-hub') {
         loadMembershipDirectory();
+        loadMembershipApplications();
     }
 
     function loadMembershipApplications() {
@@ -445,6 +444,12 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.edit-user', function(e) {
         e.preventDefault();
         triggerEditUser($(this).data('id'));
+    });
+
+    $(document).on('click', '.edit-my-profile', function() {
+        // Since we are editing ourselves, we can use a separate logic or reuse triggerEditUser
+        const userId = wshc_dashboard_obj.current_user_id; // Need to localize this
+        triggerEditUser(userId);
     });
 
     function triggerEditUser(userId) {
