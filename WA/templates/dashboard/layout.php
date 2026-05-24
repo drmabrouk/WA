@@ -119,7 +119,6 @@ $base_url = home_url('/id');
 
             <!-- User Management Section -->
             <div id="section-user-management" class="dashboard-section <?php echo $current_section === 'user-management' ? '' : 'hidden'; ?>">
-                <h1 class="section-title">SYSTEM USERS MANAGEMENT</h1>
                 <div id="user-management-container">
                     <!-- User list will be loaded here -->
                 </div>

@@ -23,7 +23,7 @@ jQuery(document).ready(function($) {
         const role = roleFilter.length ? roleFilter.val() : '';
         const status = statusFilter.length ? statusFilter.val() : '';
 
-        container.css('opacity', '0.5').html('<div style="text-align:center; padding: 50px;">LOADING USER DATA...</div>');
+        container.css('opacity', '0.5');
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -102,7 +102,6 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     alert(response.data.message);
-                    console.log('Exported Data (Base64):', response.data.data);
                 } else {
                     alert(response.data.message);
                 }
@@ -131,10 +130,19 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // Toggle Status Modal
     $(document).on('click', '.toggle-status', function() {
         const userId = $(this).data('id');
+        const title = $(this).attr('title');
+        $('#status-user-id').val(userId);
+        $('#status-modal-message').text(`Are you sure you want to ${title.toLowerCase()}?`);
+        $('#status-user-modal').removeClass('hidden').hide().fadeIn(200);
+    });
+
+    $('#confirm-status-btn').on('click', function() {
+        const userId = $('#status-user-id').val();
         const btn = $(this);
-        btn.prop('disabled', true).css('opacity', '0.5');
+        btn.prop('disabled', true).text('PROCESSING...');
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -145,11 +153,12 @@ jQuery(document).ready(function($) {
                 user_id: userId
             },
             success: function(response) {
+                btn.prop('disabled', false).text('Confirm Change');
+                $('#status-user-modal').addClass('hidden');
                 if (response.success) {
                     loadUserManagement();
                 } else {
                     alert(response.data.message);
-                    btn.prop('disabled', false).css('opacity', '1');
                 }
             }
         });
@@ -165,8 +174,6 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.view-user', function() {
         const userId = $(this).data('id');
         const row = $(this).closest('tr');
-        const username = row.find('td:eq(0)').text();
-        const email = row.find('td:eq(1)').text();
         const role = row.find('td:eq(2)').text();
         const joined = row.find('td:eq(3)').text();
         const status = row.find('td:eq(4)').text();
@@ -191,7 +198,7 @@ jQuery(document).ready(function($) {
                         <div class="user-detail-row"><strong>Joined</strong> ${joined}</div>
                         <div class="user-detail-row"><strong>Status</strong> ${status}</div>
                         <div style="margin-top: 20px;">
-                            <button class="wshc-auth-btn edit-user" data-id="${u.ID}" style="background: #000; width: 100%; margin-bottom: 10px;">Edit Account Information</button>
+                            <button class="wshc-auth-btn edit-trigger" data-id="${u.ID}" style="background: #000; width: 100%; margin-bottom: 10px;">Edit Account Information</button>
                         </div>
                     `;
                     $('#user-details-content').html(html);
@@ -207,21 +214,17 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $(document).on('click', '#user-details-content .edit-user', function() {
+    $(document).on('click', '.edit-trigger', function() {
         $('#user-details-modal').addClass('hidden');
+        const userId = $(this).data('id');
+        triggerEditUser(userId);
     });
 
     $(document).on('click', '.edit-user', function() {
-        const userId = $(this).data('id');
-        const row = $(this).closest('tr');
-        const roleText = row.find('.role-capsule').text();
-        
-        const roleMap = {
-            'WSHC Member': 'wshc_member',
-            'WSHC Staff': 'wshc_staff',
-            'WSHC Administrator': 'wshc_administrator'
-        };
+        triggerEditUser($(this).data('id'));
+    });
 
+    function triggerEditUser(userId) {
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
             type: 'POST',
@@ -239,15 +242,20 @@ jQuery(document).ready(function($) {
                     $('#form-last-name').val(u.last_name);
                     $('#form-username').val(u.user_login);
                     $('#form-email').val(u.user_email);
-                    $('#form-role').val(roleMap[roleText] || 'wshc_member');
                     $('#form-password').val('');
                     $('#user-modal').removeClass('hidden').hide().fadeIn(300);
                 }
             }
         });
+    }
+
+    $(document).on('click', '.close-modal', function() {
+        $(this).closest('.wshc-modal').fadeOut(200, function() {
+            $(this).addClass('hidden');
+        });
     });
 
-    $(document).on('click', '#close-modal', function() {
+    $('#close-modal').on('click', function() {
         $('#user-modal').fadeOut(200, function() {
             $(this).addClass('hidden');
         });
@@ -257,31 +265,34 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         const btn = $(this).find('button[type="submit"]');
         const formData = $(this).serialize();
-
         btn.prop('disabled', true).text('SAVING...');
-
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
             type: 'POST',
             data: formData + '&action=wshc_save_user&nonce=' + wshc_dashboard_obj.nonce,
             success: function(response) {
+                btn.prop('disabled', false).text('SAVE USER');
                 if (response.success) {
                     $('#user-modal').addClass('hidden');
                     loadUserManagement();
                 } else {
                     alert(response.data.message);
                 }
-                btn.prop('disabled', false).text('SAVE USER');
             }
         });
     });
 
+    // Delete User Modal
     $(document).on('click', '.delete-user', function() {
-        if (!confirm('Are you sure you want to delete this user?')) return;
         const userId = $(this).data('id');
-        const btn = $(this);
-        btn.prop('disabled', true).css('opacity', '0.5');
+        $('#delete-user-id').val(userId);
+        $('#delete-user-modal').removeClass('hidden').hide().fadeIn(200);
+    });
 
+    $('#confirm-delete-btn').on('click', function() {
+        const userId = $('#delete-user-id').val();
+        const btn = $(this);
+        btn.prop('disabled', true).text('DELETING...');
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
             type: 'POST',
@@ -291,11 +302,12 @@ jQuery(document).ready(function($) {
                 user_id: userId
             },
             success: function(response) {
+                btn.prop('disabled', false).text('Delete User');
+                $('#delete-user-modal').addClass('hidden');
                 if (response.success) {
                     loadUserManagement();
                 } else {
                     alert(response.data.message);
-                    btn.prop('disabled', false).css('opacity', '1');
                 }
             }
         });

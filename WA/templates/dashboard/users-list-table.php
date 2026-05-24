@@ -1,3 +1,8 @@
+<div class="user-management-header">
+    <h1 class="section-title">SYSTEM USERS MANAGEMENT</h1>
+    <button id="add-user-btn" class="wshc-auth-btn"><span class="dashicons dashicons-plus"></span> Add New User</button>
+</div>
+
 <div class="user-management-controls">
     <div class="search-filter">
         <input type="text" id="user-search" placeholder="Search by name or email...">
@@ -12,7 +17,6 @@
             <option value="active">Active</option>
             <option value="suspended">Suspended</option>
         </select>
-        <button id="add-user-btn" class="wshc-auth-btn" style="width: auto; padding: 10px 20px;"><span class="dashicons dashicons-plus"></span> Add New User</button>
     </div>
 </div>
 
@@ -129,6 +133,32 @@
         </div>
         <div class="modal-actions">
             <button type="button" id="close-details-modal" class="wshc-auth-btn">Close Information</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div id="delete-user-modal" class="wshc-modal hidden">
+    <div class="wshc-modal-content">
+        <h2>CONFIRM DELETION</h2>
+        <p>Are you sure you want to permanently delete this user? This action cannot be undone.</p>
+        <input type="hidden" id="delete-user-id">
+        <div class="modal-actions">
+            <button type="button" id="confirm-delete-btn" class="wshc-auth-btn" style="background: #d32f2f;">Delete User</button>
+            <button type="button" class="wshc-auth-btn close-modal" style="background: #666;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Status Toggle Modal -->
+<div id="status-user-modal" class="wshc-modal hidden">
+    <div class="wshc-modal-content">
+        <h2 id="status-modal-title">UPDATE ACCOUNT STATUS</h2>
+        <p id="status-modal-message"></p>
+        <input type="hidden" id="status-user-id">
+        <div class="modal-actions">
+            <button type="button" id="confirm-status-btn" class="wshc-auth-btn">Confirm Change</button>
+            <button type="button" class="wshc-auth-btn close-modal" style="background: #666;">Cancel</button>
         </div>
     </div>
 </div>
