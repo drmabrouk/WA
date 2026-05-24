@@ -34,15 +34,9 @@ $base_url = home_url('/id');
                         </a>
                     </li>
                     <li>
-                        <a href="<?php echo esc_url(add_query_arg('section', 'membership-apps', $base_url)); ?>"
-                           class="nav-link <?php echo $current_section === 'membership-apps' ? 'active' : ''; ?>">
-                            <span class="nav-icon dashicons dashicons-email-alt"></span> Applications
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo esc_url(add_query_arg('section', 'membership-dir', $base_url)); ?>"
-                           class="nav-link <?php echo $current_section === 'membership-dir' ? 'active' : ''; ?>">
-                            <span class="nav-icon dashicons dashicons-businessperson"></span> Memberships
+                        <a href="<?php echo esc_url(add_query_arg('section', 'membership-hub', $base_url)); ?>"
+                           class="nav-link <?php echo $current_section === 'membership-hub' ? 'active' : ''; ?>">
+                            <span class="nav-icon dashicons dashicons-businessperson"></span> Memberships & Apps
                         </a>
                     </li>
                     <li>
@@ -219,21 +213,28 @@ $base_url = home_url('/id');
                     </div>
                 </div>
 
-                <!-- Membership Applications Section -->
-                <div id="section-membership-apps" class="dashboard-section <?php echo $current_section === 'membership-apps' ? '' : 'hidden'; ?>">
-                    <h1 class="section-title">MEMBERSHIP APPLICATIONS</h1>
-                    <div id="membership-apps-container"></div>
-                </div>
+                <!-- Membership Hub Section (Unified) -->
+                <div id="section-membership-hub" class="dashboard-section <?php echo $current_section === 'membership-hub' ? '' : 'hidden'; ?>">
+                    <h1 class="section-title">MEMBERSHIPS & APPLICATIONS</h1>
 
-                <!-- Membership Directory Section -->
-                <div id="section-membership-dir" class="dashboard-section <?php echo $current_section === 'membership-dir' ? '' : 'hidden'; ?>">
-                    <h1 class="section-title">MEMBERSHIP DIRECTORY</h1>
-                    <div id="membership-dir-container"></div>
+                    <div class="settings-tabs">
+                        <button class="settings-tab active" data-tab="hub-directory">Members Directory</button>
+                        <button class="settings-tab" data-tab="hub-apps">Pending Applications</button>
+                    </div>
+
+                    <div class="settings-tab-content">
+                        <div id="tab-hub-directory" class="settings-pane active">
+                            <div id="membership-dir-container"></div>
+                        </div>
+                        <div id="tab-hub-apps" class="settings-pane hidden">
+                            <div id="membership-apps-container"></div>
+                        </div>
+                    </div>
                 </div>
             <?php endif; ?>
 
             <!-- Visitor Information & Apply Section -->
-            <div id="section-info-apply" class="dashboard-section <?php echo $current_section === 'info-apply' ? '' : 'hidden'; ?>">
+            <div id="section-info-apply" class="dashboard-section <?php echo ($current_section === 'info-apply' || (empty($current_section) && current_user_can('wshc_visitor'))) ? '' : 'hidden'; ?>">
                 <h1 class="section-title">MEMBERSHIP APPLICATION WIZARD</h1>
                 <div class="content-panel">
                     <div class="wizard-progress">
@@ -397,12 +398,26 @@ $base_url = home_url('/id');
             </div>
 
             <!-- My Account Section -->
-            <div id="section-my-account" class="dashboard-section <?php echo ($current_section === 'my-account' || (empty($current_section) && !current_user_can('administrator'))) ? '' : 'hidden'; ?>">
-                <h1 class="section-title">MY ACCOUNT</h1>
+            <div id="section-my-account" class="dashboard-section <?php echo ($current_section === 'my-account' || (empty($current_section) && !current_user_can('administrator') && !current_user_can('wshc_visitor'))) ? '' : 'hidden'; ?>">
+                <h1 class="section-title">MY ACCOUNT & PROFILE</h1>
                 <div class="content-panel">
                     <div class="user-profile-summary">
-                        <h3>Welcome back, <?php echo esc_html($current_user->display_name); ?></h3>
-                        <p>Role: <span class="role-capsule rank-capsule"><?php echo esc_html($role_label); ?></span></p>
+                        <h3>Welcome, <?php echo esc_html($current_user->display_name); ?></h3>
+                        <div style="margin-bottom: 20px;">
+                            <span class="role-capsule rank-capsule"><?php echo esc_html($role_label); ?></span>
+                            <button class="wshc-auth-btn edit-my-profile" style="width: auto; padding: 5px 15px; font-size: 10px; margin-left: 10px;">Edit Profile</button>
+                        </div>
+
+                        <div class="profile-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
+                            <div class="detail-item">
+                                <label style="display:block; font-size: 10px; font-weight:800; color: #888;">FULL NAME</label>
+                                <div style="font-weight: 700;"><?php echo esc_html($current_user->first_name . ' ' . $current_user->last_name); ?></div>
+                            </div>
+                            <div class="detail-item">
+                                <label style="display:block; font-size: 10px; font-weight:800; color: #888;">EMAIL ADDRESS</label>
+                                <div style="font-weight: 700;"><?php echo esc_html($current_user->user_email); ?></div>
+                            </div>
+                        </div>
 
                         <?php
                         $mid = get_user_meta($current_user->ID, 'wshc_membership_id', true);
@@ -410,25 +425,27 @@ $base_url = home_url('/id');
                             $expiry = get_user_meta($current_user->ID, 'wshc_membership_expiry', true);
                             $days_left = ceil((strtotime($expiry) - time()) / 86400);
                         ?>
-                            <div class="membership-status-box" style="margin-top: 30px; padding: 25px; border: 1.5px solid #000; border-radius: 12px;">
-                                <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 10px;">Membership Details</div>
+                            <div class="membership-status-box" style="margin-top: 40px; padding: 25px; border: 1.5px solid #000; border-radius: 12px;">
+                                <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 15px;">Membership Activation Parameters</div>
                                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
                                     <div>
                                         <div style="font-size: 20px; font-weight: 800;">#<?php echo esc_html($mid); ?></div>
-                                        <div style="font-size: 10px; color: #888;">MEMBERSHIP ID</div>
+                                        <div style="font-size: 10px; color: #888;">UNIQUE ID</div>
                                     </div>
                                     <div>
                                         <div style="font-size: 20px; font-weight: 800;"><?php echo date('M d, Y', strtotime($expiry)); ?></div>
-                                        <div style="font-size: 10px; color: #888;">EXPIRATION DATE</div>
+                                        <div style="font-size: 10px; color: #888;">EXPIRATION</div>
                                     </div>
                                     <div>
                                         <div style="font-size: 20px; font-weight: 800; color: #d32f2f;"><?php echo max(0, $days_left); ?> Days</div>
-                                        <div style="font-size: 10px; color: #888;">COUNTDOWN</div>
+                                        <div style="font-size: 10px; color: #888;">REMAINING</div>
                                     </div>
                                 </div>
                             </div>
                         <?php else : ?>
-                            <p style="margin-top: 20px; color: #666;">You do not have an active membership. Please visit the Information section to apply.</p>
+                            <div class="content-panel" style="margin-top: 40px; background: #f9f9f9; border: none;">
+                                <p style="color: #666; font-size: 13px;">No active membership records found. Please complete the application wizard to activate your account profile.</p>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>

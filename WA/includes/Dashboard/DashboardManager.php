@@ -43,8 +43,9 @@ class DashboardManager {
             wp_enqueue_style('wshc-dashboard-style', WSHC_PLUGIN_URL . 'assets/css/dashboard.css', [], '1.0.0');
             wp_enqueue_script('wshc-dashboard-js', WSHC_PLUGIN_URL . 'assets/js/dashboard.js', ['jquery'], '1.0.0', true);
             wp_localize_script('wshc-dashboard-js', 'wshc_dashboard_obj', [
-                'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce'   => wp_create_nonce('wshc_dashboard_nonce'),
+                'ajaxurl'         => admin_url('admin-ajax.php'),
+                'nonce'           => wp_create_nonce('wshc_dashboard_nonce'),
+                'current_user_id' => get_current_user_id(),
             ]);
         }
     }
