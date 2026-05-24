@@ -1,10 +1,13 @@
 <?php
 /**
- * Plugin Name: WSHC Management System
- * Description: Professional enterprise-level WordPress plugin for the World Sports Health Council.
- * Version: 1.0.0
- * Author: WSHC
+ * Plugin Name: Management System
+ * Plugin URI: https://gshcouncil.org
+ * Description: The official professional management extension developed by the Global Council of Sport Health. This enterprise-level system provides advanced user control, real-time analytics, and secure administrative tools for the Global Council of Sport Health's digital ecosystem.
+ * Version: 1.1.0
+ * Author: Global Council of Sport Health
+ * Author URI: https://gshcouncil.org
  * Text Domain: wshc-ms
+ * License: GPL-2.0-or-later
  */
 
 if (!defined('ABSPATH')) {
