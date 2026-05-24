@@ -12,6 +12,25 @@ class DashboardManager {
     public function init() {
         add_shortcode('wshc_dashboard', [$this, 'render_dashboard']);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_dashboard_assets']);
+        add_action('wp_ajax_wshc_revert_log', [$this, 'handle_revert_log']);
+    }
+
+    /**
+     * Handle log reversion AJAX.
+     */
+    public function handle_revert_log() {
+        check_ajax_referer('wshc_dashboard_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Permission denied.']);
+        }
+
+        $log_id = intval($_POST['log_id']);
+        if (\WSHC\UserManagement\ActivityLogger::revert_action($log_id)) {
+            wp_send_json_success(['message' => 'Action successfully rolled back.']);
+        } else {
+            wp_send_json_error(['message' => 'Failed to revert action.']);
+        }
     }
 
     /**

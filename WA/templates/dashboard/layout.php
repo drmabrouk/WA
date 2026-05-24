@@ -93,10 +93,11 @@ $base_url = home_url('/id');
                         <table class="wshc-table compact">
                             <thead>
                                 <tr>
-                                    <th>Admin</th>
-                                    <th>Action</th>
-                                    <th>Details</th>
-                                    <th>Time</th>
+                                    <th>Actor</th>
+                                    <th>Event</th>
+                                    <th>Information</th>
+                                    <th>Date</th>
+                                    <th style="text-align: right;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,12 +106,24 @@ $base_url = home_url('/id');
                                     $action_label = ucwords(str_replace('_', ' ', $log->action));
                                 ?>
                                     <tr>
-                                        <td><?php echo $admin ? esc_html($admin->display_name) : 'System'; ?></td>
+                                        <td><strong><?php echo $admin ? esc_html($admin->display_name) : 'System'; ?></strong></td>
                                         <td><span class="action-tag <?php echo esc_attr($log->action); ?>"><?php echo esc_html($action_label); ?></span></td>
-                                        <td><?php echo esc_html($log->details); ?></td>
-                                        <td><?php echo human_time_diff(strtotime($log->created_at), current_time('timestamp')); ?> ago</td>
+                                        <td style="font-size: 12px; color: #666;"><?php echo esc_html($log->details); ?></td>
+                                        <td><?php echo date('M d, H:i', strtotime($log->created_at)); ?></td>
+                                        <td style="text-align: right;">
+                                            <?php if ($log->action !== 'rollback') : ?>
+                                                <button class="revert-btn action-btn" data-id="<?php echo $log->id; ?>" title="Rollback Action">
+                                                    <span class="dashicons dashicons-undo"></span>
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
+                                <?php if (empty($stats['recent_logs'])) : ?>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 30px; color: #999;">No recent activities found in the last 48 hours.</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

@@ -357,12 +357,40 @@ jQuery(document).ready(function($) {
                 user_id: userId
             },
             success: function(response) {
-                btn.prop('disabled', false).text('Delete User');
+                btn.prop('disabled', false).text('Delete Account');
                 $('#delete-user-modal').addClass('hidden');
                 if (response.success) {
                     loadUserManagement();
                 } else {
                     alert(response.data.message);
+                }
+            }
+        });
+    });
+
+    // Revert Activity Log
+    $(document).on('click', '.revert-btn', function() {
+        const logId = $(this).data('id');
+        const btn = $(this);
+
+        if (!confirm('Are you sure you want to rollback this system update/action?')) return;
+
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_revert_log',
+                nonce: wshc_dashboard_obj.nonce,
+                log_id: logId
+            },
+            success: function(response) {
+                alert(response.data.message);
+                if (response.success) {
+                    window.location.reload(); // Reload to refresh activity log and stats
+                } else {
+                    btn.prop('disabled', false);
                 }
             }
         });

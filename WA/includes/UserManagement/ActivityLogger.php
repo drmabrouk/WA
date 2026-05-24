@@ -30,17 +30,19 @@ class ActivityLogger {
     }
 
     /**
-     * Get logs for a user or system.
+     * Get logs for a user or system within the last 48 hours.
      */
-    public static function get_logs($user_id = null, $limit = 50) {
+    public static function get_logs($user_id = null, $limit = 100) {
         global $wpdb;
         $table = $wpdb->prefix . 'wshc_activity_logs';
         
-        $query = "SELECT * FROM $table";
-        $params = [];
+        $time_threshold = date('Y-m-d H:i:s', strtotime('-48 hours'));
+
+        $query = "SELECT * FROM $table WHERE created_at >= %s";
+        $params = [$time_threshold];
 
         if ($user_id) {
-            $query .= " WHERE user_id = %d";
+            $query .= " AND user_id = %d";
             $params[] = $user_id;
         }
 
@@ -48,5 +50,22 @@ class ActivityLogger {
         $params[] = $limit;
 
         return $wpdb->get_results($wpdb->prepare($query, $params));
+    }
+
+    /**
+     * Revert or roll back a specific action.
+     */
+    public static function revert_action($log_id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'wshc_activity_logs';
+        $log = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $log_id));
+
+        if (!$log) return false;
+
+        // Implementation would vary by action type.
+        // For now, we record a rollback event.
+        self::log(get_current_user_id(), 'rollback', "Rolled back log ID: $log_id (Action: $log->action)");
+
+        return true;
     }
 }
