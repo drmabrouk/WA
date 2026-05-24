@@ -24,9 +24,26 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
     <div class="dashboard-body">
         <!-- Sidebar -->
         <aside class="wshc-sidebar" id="wshc-sidebar">
-            <ul>
-                <li><a href="#" class="nav-link active" data-section="dashboard-overview"><span class="nav-icon">📊</span> Dashboard Overview</a></li>
-                <li><a href="#" class="nav-link" data-section="user-management"><span class="nav-icon">👥</span> User Management</a></li>
+            <ul class="nav-menu">
+                <li>
+                    <a href="#" class="nav-link active" data-section="dashboard-overview">
+                        <span class="nav-icon">📊</span> Dashboard Overview
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-section="user-management">
+                        <span class="nav-icon">👥</span> User Management
+                    </a>
+                </li>
+                <li class="has-submenu">
+                    <a href="#" class="nav-link submenu-toggle">
+                        <span class="nav-icon">⚙️</span> Settings <span class="arrow-icon">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#" class="nav-link sub-link" data-section="design-settings">Design Settings</a></li>
+                        <li><a href="#" class="nav-link sub-link" data-section="system-data">System Data</a></li>
+                    </ul>
+                </li>
             </ul>
         </aside>
 
@@ -105,6 +122,22 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
                 <h1 class="section-title">SYSTEM USERS MANAGEMENT</h1>
                 <div id="user-management-container">
                     <!-- User list will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Design Settings Section -->
+            <div id="section-design-settings" class="dashboard-section hidden">
+                <h1 class="section-title">DESIGN SETTINGS</h1>
+                <div class="content-panel">
+                    <p>Configure the visual appearance and branding of the management system.</p>
+                </div>
+            </div>
+
+            <!-- System Data Section -->
+            <div id="section-system-data" class="dashboard-section hidden">
+                <h1 class="section-title">SYSTEM DATA</h1>
+                <div class="content-panel">
+                    <p>Manage and export system-level data, backups, and logs.</p>
                 </div>
             </div>
         </main>
