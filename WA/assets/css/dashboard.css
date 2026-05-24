@@ -602,6 +602,12 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     position: relative;
     border-radius: 16px;
+    animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .wshc-modal-content h2 {
@@ -626,6 +632,20 @@
     color: var(--wshc-gray-500);
     width: 100px;
     display: inline-block;
+}
+
+.dossier-section p {
+    font-size: 13px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.dossier-section strong {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #666;
+    display: inline-block;
+    width: 120px;
 }
 
 /* Wizard Progress */
