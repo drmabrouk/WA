@@ -7,7 +7,7 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
     <!-- Top Navbar -->
     <nav class="wshc-top-nav">
         <div class="nav-left">
-            <button id="sidebar-toggle" class="sidebar-btn">☰</button>
+            <button id="sidebar-toggle" class="sidebar-btn"><span class="dashicons dashicons-menu"></span></button>
             <span class="system-title">WSHC Management System</span>
         </div>
         <div class="nav-right">
@@ -16,7 +16,7 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
                 <span class="role-capsule rank-capsule"><?php echo esc_html($role_label); ?></span>
             </div>
             <a href="<?php echo wp_logout_url(home_url('/wshc-login')); ?>" class="logout-icon-link" title="Logout">
-                <span class="logout-icon">⏻</span>
+                <span class="dashicons dashicons-exit"></span>
             </a>
         </div>
     </nav>
@@ -27,17 +27,17 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
             <ul class="nav-menu">
                 <li>
                     <a href="#" class="nav-link active" data-section="dashboard-overview">
-                        <span class="nav-icon">📊</span> Dashboard Overview
+                        <span class="nav-icon dashicons dashicons-dashboard"></span> Dashboard Overview
                     </a>
                 </li>
                 <li>
                     <a href="#" class="nav-link" data-section="user-management">
-                        <span class="nav-icon">👥</span> User Management
+                        <span class="nav-icon dashicons dashicons-groups"></span> User Management
                     </a>
                 </li>
                 <li class="has-submenu">
                     <a href="#" class="nav-link submenu-toggle">
-                        <span class="nav-icon">⚙️</span> Settings <span class="arrow-icon">▼</span>
+                        <span class="nav-icon dashicons dashicons-admin-settings"></span> Settings <span class="arrow-icon dashicons dashicons-arrow-down-alt2"></span>
                     </a>
                     <ul class="submenu">
                         <li><a href="#" class="nav-link sub-link" data-section="design-settings">Design Settings</a></li>
@@ -55,28 +55,28 @@ $role_label = !empty($roles) ? ucwords(str_replace(['_', 'wshc'], [' ', 'WSHC'],
 
                 <div class="stats-grid">
                     <div class="stat-card users">
-                        <div class="stat-icon">👥</div>
+                        <div class="stat-icon dashicons dashicons-groups"></div>
                         <div class="stat-info">
                             <span class="stat-label">Total Users</span>
                             <span class="stat-value"><?php echo number_format($stats['total_users']); ?></span>
                         </div>
                     </div>
                     <div class="stat-card active">
-                        <div class="stat-icon">✅</div>
+                        <div class="stat-icon dashicons dashicons-yes-alt"></div>
                         <div class="stat-info">
                             <span class="stat-label">Active Accounts</span>
                             <span class="stat-value"><?php echo number_format($stats['active_users']); ?></span>
                         </div>
                     </div>
                     <div class="stat-card suspended">
-                        <div class="stat-icon">🚫</div>
+                        <div class="stat-icon dashicons dashicons-dismiss"></div>
                         <div class="stat-info">
                             <span class="stat-label">Suspended</span>
                             <span class="stat-value"><?php echo number_format($stats['suspended_users']); ?></span>
                         </div>
                     </div>
                     <div class="stat-card admins">
-                        <div class="stat-icon">🔑</div>
+                        <div class="stat-icon dashicons dashicons-shield"></div>
                         <div class="stat-info">
                             <span class="stat-label">Administrators</span>
                             <span class="stat-value"><?php
