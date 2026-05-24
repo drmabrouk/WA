@@ -39,6 +39,10 @@ class DashboardManager {
             exit;
         }
 
+        if (!current_user_can('read')) {
+            wp_die('Access denied.');
+        }
+
         $current_section = isset($_GET['section']) ? sanitize_text_field($_GET['section']) : 'dashboard-overview';
         $stats = $this->get_dashboard_stats();
 

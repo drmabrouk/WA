@@ -12,12 +12,18 @@ jQuery(document).ready(function($) {
     }
 
     function loadUserManagement(paged = 1) {
-        const search = $('#user-search').val();
-        const role = $('#role-filter').val();
-        const status = $('#status-filter').val();
+        const searchInput = $('#user-search');
+        const roleFilter = $('#role-filter');
+        const statusFilter = $('#status-filter');
         const container = $('#user-management-container');
 
-        container.css('opacity', '0.5');
+        if (!container.length) return;
+
+        const search = searchInput.length ? searchInput.val() : '';
+        const role = roleFilter.length ? roleFilter.val() : '';
+        const status = statusFilter.length ? statusFilter.val() : '';
+
+        container.css('opacity', '0.5').html('<div style="text-align:center; padding: 50px;">LOADING USER DATA...</div>');
 
         $.ajax({
             url: wshc_dashboard_obj.ajaxurl,
@@ -35,10 +41,12 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     container.html(response.data.html);
                     renderPagination(response.data.pages, paged);
+                } else {
+                    container.html(`<div class="wshc-message error">${response.data.message}</div>`);
                 }
             },
             error: function() {
-                container.css('opacity', '1');
+                container.css('opacity', '1').html('<div class="wshc-message error">FAILED TO LOAD USERS. PLEASE TRY AGAIN.</div>');
             }
         });
     }
@@ -175,12 +183,16 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     const u = response.data;
                     let html = `
+                        <div class="user-detail-row"><strong>ID</strong> #${u.ID}</div>
                         <div class="user-detail-row"><strong>Name</strong> ${u.first_name} ${u.last_name}</div>
                         <div class="user-detail-row"><strong>Username</strong> ${u.user_login}</div>
                         <div class="user-detail-row"><strong>Email</strong> ${u.user_email}</div>
                         <div class="user-detail-row"><strong>Role</strong> ${role}</div>
                         <div class="user-detail-row"><strong>Joined</strong> ${joined}</div>
                         <div class="user-detail-row"><strong>Status</strong> ${status}</div>
+                        <div style="margin-top: 20px;">
+                            <button class="wshc-auth-btn edit-user" data-id="${u.ID}" style="background: #000; width: 100%; margin-bottom: 10px;">Edit Account Information</button>
+                        </div>
                     `;
                     $('#user-details-content').html(html);
                     $('#user-details-modal').removeClass('hidden').hide().fadeIn(300);
@@ -193,6 +205,10 @@ jQuery(document).ready(function($) {
         $('#user-details-modal').fadeOut(200, function() {
             $(this).addClass('hidden');
         });
+    });
+
+    $(document).on('click', '#user-details-content .edit-user', function() {
+        $('#user-details-modal').addClass('hidden');
     });
 
     $(document).on('click', '.edit-user', function() {
