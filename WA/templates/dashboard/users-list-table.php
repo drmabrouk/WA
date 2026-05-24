@@ -156,6 +156,29 @@
         <h2 id="status-modal-title">UPDATE ACCOUNT STATUS</h2>
         <p id="status-modal-message"></p>
         <input type="hidden" id="status-user-id">
+
+        <div id="suspension-advanced-fields" class="hidden">
+            <div class="wshc-auth-form-group">
+                <label>Reason for Suspension</label>
+                <select id="suspension-reason">
+                    <option value="Policy Violation">Policy Violation</option>
+                    <option value="Spamming Activity">Spamming Activity</option>
+                    <option value="Suspicious Login">Suspicious Login</option>
+                    <option value="Unprofessional Behavior">Unprofessional Behavior</option>
+                    <option value="Account Compromised">Account Compromised</option>
+                    <option value="Duplicate Account">Duplicate Account</option>
+                    <option value="Non-Payment">Non-Payment</option>
+                    <option value="Requested by User">Requested by User</option>
+                    <option value="Inactivity">Inactivity</option>
+                    <option value="Under Investigation">Under Investigation</option>
+                </select>
+            </div>
+            <div class="wshc-auth-form-group">
+                <label>Suspension Duration (Days)</label>
+                <input type="number" id="suspension-duration" placeholder="e.g. 30" min="1">
+            </div>
+        </div>
+
         <div class="modal-actions">
             <button type="button" id="confirm-status-btn" class="wshc-auth-btn">Confirm Change</button>
             <button type="button" class="wshc-auth-btn close-modal" style="background: #666;">Cancel</button>

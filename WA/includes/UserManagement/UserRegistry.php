@@ -172,21 +172,29 @@ class UserRegistry {
     public function toggle_user_status() {
         check_ajax_referer('wshc_dashboard_nonce', 'nonce');
 
-        if (!current_user_can('manage_wshc_users')) {
+        if (!current_user_can('manage_wshc_users') && !current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Permission denied.']);
         }
 
         $user_id = intval($_POST['user_id']);
+        $reason = sanitize_text_field($_POST['reason'] ?? '');
+        $duration = intval($_POST['duration'] ?? 0);
         $status = get_user_meta($user_id, 'wshc_suspended', true);
         
         if ($status) {
             delete_user_meta($user_id, 'wshc_suspended');
+            delete_user_meta($user_id, 'wshc_suspension_reason');
+            delete_user_meta($user_id, 'wshc_suspension_duration');
             $message = 'User reactivated.';
             ActivityLogger::log(get_current_user_id(), 'user_reactivate', "Reactivated user ID: $user_id");
         } else {
             update_user_meta($user_id, 'wshc_suspended', 1);
+            if ($reason) update_user_meta($user_id, 'wshc_suspension_reason', $reason);
+            if ($duration) update_user_meta($user_id, 'wshc_suspension_duration', $duration);
+
+            $log_details = "Suspended user ID: $user_id. Reason: $reason. Duration: $duration days.";
             $message = 'User suspended.';
-            ActivityLogger::log(get_current_user_id(), 'user_suspend', "Suspended user ID: $user_id");
+            ActivityLogger::log(get_current_user_id(), 'user_suspend', $log_details);
         }
 
         wp_send_json_success(['message' => $message]);

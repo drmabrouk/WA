@@ -348,17 +348,21 @@
 .user-management-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 30px;
 }
 
 .user-management-header .wshc-auth-btn {
     width: auto;
-    padding: 12px 24px;
-    font-size: 13px;
+    padding: 10px 20px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.user-management-header .section-title {
+    margin-bottom: 0;
 }
 
 .user-management-controls {
@@ -386,7 +390,8 @@
     border-color: var(--wshc-black);
 }
 
-.search-filter input { flex: 1; max-width: 280px; }
+.search-filter input { flex: 2; }
+.search-filter select { flex: 1; }
 
 /* Buttons */
 .action-btn {
