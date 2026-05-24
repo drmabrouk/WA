@@ -93,46 +93,49 @@
         <h2 id="modal-title">ADD NEW USER</h2>
         <form id="wshc-user-form">
             <input type="hidden" name="user_id" id="form-user-id">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+
+            <div class="wshc-auth-grid">
                 <div class="wshc-auth-form-group">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" id="form-first-name">
+                    <input type="text" name="first_name" id="form-first-name" placeholder="First Name">
                 </div>
                 <div class="wshc-auth-form-group">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" id="form-last-name">
+                    <input type="text" name="last_name" id="form-last-name" placeholder="Last Name">
                 </div>
             </div>
-            <div class="wshc-auth-form-group">
-                <label>Username</label>
-                <input type="text" name="username" id="form-username" required>
+
+            <div class="wshc-auth-grid">
+                <div class="wshc-auth-form-group">
+                    <input type="text" name="username" id="form-username" placeholder="Username" required minlength="4">
+                </div>
+                <div class="wshc-auth-form-group">
+                    <input type="email" name="email" id="form-email" placeholder="Email Address" required>
+                </div>
             </div>
-            <div class="wshc-auth-form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" id="form-email" required>
+
+            <div class="wshc-auth-grid">
+                <div class="wshc-auth-form-group">
+                    <input type="password" name="password" id="form-password" placeholder="Password (8-20 chars)" minlength="8" maxlength="20">
+                </div>
+                <div class="wshc-auth-form-group">
+                    <select name="role" id="form-role" required>
+                        <option value="" disabled selected>Select System Role</option>
+                        <option value="subscriber">Subscriber</option>
+                        <option value="wshc_member">Member</option>
+                        <option value="wshc_research_member">Research Member</option>
+                        <option value="wshc_practitioner_member">Practitioner Member</option>
+                        <option value="wshc_fellowship_member">Fellowship Member</option>
+                        <option value="wshc_scientific_reviewer">Scientific Reviewer</option>
+                        <option value="wshc_programs_manager">Programs Manager</option>
+                        <option value="wshc_regional_coordinator">Regional Coordinator</option>
+                        <option value="wshc_secretary_general">Secretary-General</option>
+                        <option value="administrator">Administrator</option>
+                    </select>
+                </div>
             </div>
-            <div class="wshc-auth-form-group">
-                <label>Password (leave blank to keep current)</label>
-                <input type="password" name="password" id="form-password">
-            </div>
-            <div class="wshc-auth-form-group">
-                <label>System Role</label>
-                <select name="role" id="form-role" required>
-                    <option value="subscriber">Subscriber</option>
-                    <option value="wshc_member">Member</option>
-                    <option value="wshc_research_member">Research Member</option>
-                    <option value="wshc_practitioner_member">Practitioner Member</option>
-                    <option value="wshc_fellowship_member">Fellowship Member</option>
-                    <option value="wshc_scientific_reviewer">Scientific Reviewer</option>
-                    <option value="wshc_programs_manager">Programs Manager</option>
-                    <option value="wshc_regional_coordinator">Regional Coordinator</option>
-                    <option value="wshc_secretary_general">Secretary-General</option>
-                    <option value="administrator">Administrator</option>
-                </select>
-            </div>
+
             <div class="modal-actions">
                 <button type="submit" class="wshc-auth-btn">Save User</button>
-                <button type="button" id="close-modal" class="wshc-auth-btn" style="background:#666;">Cancel</button>
+                <button type="button" class="wshc-auth-btn close-modal" style="background:#666;">Cancel</button>
             </div>
         </form>
     </div>
@@ -146,7 +149,7 @@
             <!-- Details will be loaded here -->
         </div>
         <div class="modal-actions">
-            <button type="button" id="close-details-modal" class="wshc-auth-btn">Close Information</button>
+            <button type="button" class="wshc-auth-btn close-modal">Close Information</button>
         </div>
     </div>
 </div>
@@ -158,7 +161,7 @@
         <p>Are you sure you want to permanently delete this user? This action cannot be undone.</p>
         <input type="hidden" id="delete-user-id">
         <div class="modal-actions">
-            <button type="button" id="confirm-delete-btn" class="wshc-auth-btn" style="background: #d32f2f;">Delete User</button>
+            <button type="button" id="confirm-delete-btn" class="wshc-auth-btn" style="background: #d32f2f;">Delete Account</button>
             <button type="button" class="wshc-auth-btn close-modal" style="background: #666;">Cancel</button>
         </div>
     </div>
