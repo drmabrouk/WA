@@ -41,6 +41,7 @@ class Plugin {
         $this->user_registry = new \WSHC\UserManagement\UserRegistry();
         $this->settings_manager = new \WSHC\Settings\SettingsManager();
         $this->access_control = new \WSHC\Security\AccessControl();
+        $this->membership_manager = new \WSHC\Memberships\MembershipManager();
     }
 
     /**
@@ -59,6 +60,7 @@ class Plugin {
         add_action('init', [$this->user_registry, 'init']);
         add_action('init', [$this->settings_manager, 'init']);
         add_action('init', [$this->access_control, 'init']);
+        add_action('init', [$this->membership_manager, 'init']);
     }
 
     /**

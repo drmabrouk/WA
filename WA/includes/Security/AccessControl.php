@@ -29,6 +29,13 @@ class AccessControl {
     }
 
     /**
+     * Check if current user has administrator access to system modules.
+     */
+    public static function is_admin() {
+        return current_user_can('administrator');
+    }
+
+    /**
      * Hide the admin bar for all roles except Administrator.
      */
     public function restrict_admin_bar() {

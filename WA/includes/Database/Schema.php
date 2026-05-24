@@ -36,8 +36,22 @@ class Schema {
             KEY user_id (user_id)
         ) $charset_collate;";
 
+        $table_apps = $wpdb->prefix . 'wshc_membership_applications';
+        $sql_apps = "CREATE TABLE $table_apps (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            full_name varchar(255) NOT NULL,
+            email varchar(100) NOT NULL,
+            nationality varchar(100) NOT NULL,
+            status varchar(20) DEFAULT 'pending' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id)
+        ) $charset_collate;";
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql_otp);
         dbDelta($sql_logs);
+        dbDelta($sql_apps);
     }
 }

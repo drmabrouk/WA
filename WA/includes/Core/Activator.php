@@ -26,11 +26,16 @@ class Activator {
      * Register custom user roles and permissions.
      */
     private static function register_roles() {
-        // Hierarchy defined by user: Subscriber -> Member -> Research Member -> Practitioner Member
-        // -> Fellowship Member -> Scientific Reviewer -> Programs Manager -> Regional Coordinator
-        // -> Secretary-General -> Administrator
+        // Purge old roles
+        remove_role('wshc_administrator');
+        remove_role('wshc_staff');
 
+        // Define exact hierarchy
         $roles = [
+            'wshc_visitor' => [
+                'display_name' => 'Visitor',
+                'caps'         => ['read' => true]
+            ],
             'wshc_member' => [
                 'display_name' => 'Member',
                 'caps'         => ['read' => true]
@@ -53,15 +58,15 @@ class Activator {
             ],
             'wshc_programs_manager' => [
                 'display_name' => 'Programs Manager',
-                'caps'         => ['read' => true, 'manage_wshc_users' => true]
+                'caps'         => ['read' => true]
             ],
             'wshc_regional_coordinator' => [
                 'display_name' => 'Regional Coordinator',
-                'caps'         => ['read' => true, 'manage_wshc_users' => true]
+                'caps'         => ['read' => true]
             ],
             'wshc_secretary_general' => [
                 'display_name' => 'Secretary-General',
-                'caps'         => ['read' => true, 'manage_wshc_users' => true, 'manage_wshc_system' => true]
+                'caps'         => ['read' => true]
             ]
         ];
 
@@ -69,12 +74,15 @@ class Activator {
             add_role($role_key, $data['display_name'], $data['caps']);
         }
 
-        // Administrator is core WP role, but we ensure our custom caps are there
+        // Ensure Administrator has all plugin capabilities
         $admin = get_role('administrator');
         if ($admin) {
             $admin->add_cap('manage_wshc_system');
             $admin->add_cap('manage_wshc_users');
         }
+
+        // Set default role for new registrations
+        update_option('default_role', 'wshc_visitor');
     }
 
     /**
