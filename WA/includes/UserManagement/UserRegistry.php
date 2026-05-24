@@ -15,6 +15,26 @@ class UserRegistry {
         add_action('wp_ajax_wshc_delete_user', [$this, 'delete_user']);
         add_action('wp_ajax_wshc_toggle_user_status', [$this, 'toggle_user_status']);
         add_action('wp_ajax_wshc_get_user_details', [$this, 'get_user_details']);
+        add_action('wp_ajax_wshc_request_deletion', [$this, 'request_self_deletion']);
+    }
+
+    /**
+     * Handle user self-deletion request (48-hour delay).
+     */
+    public function request_self_deletion() {
+        check_ajax_referer('wshc_dashboard_nonce', 'nonce');
+
+        $user_id = get_current_user_id();
+        if (!$user_id) wp_send_json_error();
+
+        $deletion_time = time() + (48 * HOUR_IN_SECONDS);
+        update_user_meta($user_id, 'wshc_pending_deletion', $deletion_time);
+
+        ActivityLogger::log($user_id, 'deletion_request', 'Requested account self-deletion (Scheduled for 48 hours)');
+
+        wp_send_json_success([
+            'message' => 'Your account has been scheduled for deletion. It will be permanently removed in 48 hours. Logging in again will cancel this request.'
+        ]);
     }
 
     /**
