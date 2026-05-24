@@ -26,20 +26,55 @@ class Activator {
      * Register custom user roles and permissions.
      */
     private static function register_roles() {
-        add_role('wshc_administrator', 'WSHC Administrator', [
-            'read' => true,
-            'manage_wshc_system' => true,
-            'manage_wshc_users' => true,
-        ]);
+        // Hierarchy defined by user: Subscriber -> Member -> Research Member -> Practitioner Member
+        // -> Fellowship Member -> Scientific Reviewer -> Programs Manager -> Regional Coordinator
+        // -> Secretary-General -> Administrator
 
-        add_role('wshc_staff', 'WSHC Staff', [
-            'read' => true,
-            'manage_wshc_users' => true,
-        ]);
+        $roles = [
+            'wshc_member' => [
+                'display_name' => 'Member',
+                'caps'         => ['read' => true]
+            ],
+            'wshc_research_member' => [
+                'display_name' => 'Research Member',
+                'caps'         => ['read' => true]
+            ],
+            'wshc_practitioner_member' => [
+                'display_name' => 'Practitioner Member',
+                'caps'         => ['read' => true]
+            ],
+            'wshc_fellowship_member' => [
+                'display_name' => 'Fellowship Member',
+                'caps'         => ['read' => true]
+            ],
+            'wshc_scientific_reviewer' => [
+                'display_name' => 'Scientific Reviewer',
+                'caps'         => ['read' => true]
+            ],
+            'wshc_programs_manager' => [
+                'display_name' => 'Programs Manager',
+                'caps'         => ['read' => true, 'manage_wshc_users' => true]
+            ],
+            'wshc_regional_coordinator' => [
+                'display_name' => 'Regional Coordinator',
+                'caps'         => ['read' => true, 'manage_wshc_users' => true]
+            ],
+            'wshc_secretary_general' => [
+                'display_name' => 'Secretary-General',
+                'caps'         => ['read' => true, 'manage_wshc_users' => true, 'manage_wshc_system' => true]
+            ]
+        ];
 
-        add_role('wshc_member', 'WSHC Member', [
-            'read' => true,
-        ]);
+        foreach ($roles as $role_key => $data) {
+            add_role($role_key, $data['display_name'], $data['caps']);
+        }
+
+        // Administrator is core WP role, but we ensure our custom caps are there
+        $admin = get_role('administrator');
+        if ($admin) {
+            $admin->add_cap('manage_wshc_system');
+            $admin->add_cap('manage_wshc_users');
+        }
     }
 
     /**

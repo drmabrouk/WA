@@ -40,6 +40,7 @@ class Plugin {
         $this->dashboard_manager = new \WSHC\Dashboard\DashboardManager();
         $this->user_registry = new \WSHC\UserManagement\UserRegistry();
         $this->settings_manager = new \WSHC\Settings\SettingsManager();
+        $this->access_control = new \WSHC\Security\AccessControl();
     }
 
     /**
@@ -57,6 +58,7 @@ class Plugin {
         add_action('init', [$this->dashboard_manager, 'init']);
         add_action('init', [$this->user_registry, 'init']);
         add_action('init', [$this->settings_manager, 'init']);
+        add_action('init', [$this->access_control, 'init']);
     }
 
     /**
