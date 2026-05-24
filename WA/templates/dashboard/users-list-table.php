@@ -12,7 +12,7 @@
             <option value="active">Active</option>
             <option value="suspended">Suspended</option>
         </select>
-        <button id="add-user-btn" class="wshc-auth-btn" style="width: auto; padding: 10px 20px;">+ Add New User</button>
+        <button id="add-user-btn" class="wshc-auth-btn" style="width: auto; padding: 10px 20px;"><span class="dashicons dashicons-plus"></span> Add New User</button>
     </div>
 </div>
 
@@ -49,16 +49,16 @@
                 </td>
                 <td class="table-actions" style="text-align: right;">
                     <button class="view-user action-btn" data-id="<?php echo $user->ID; ?>" title="View Details">
-                        <span class="btn-icon">👁</span>
+                        <span class="dashicons dashicons-visibility"></span>
                     </button>
                     <button class="edit-user action-btn" data-id="<?php echo $user->ID; ?>" title="Edit Account">
-                        <span class="btn-icon">✎</span>
+                        <span class="dashicons dashicons-edit"></span>
                     </button>
                     <button class="toggle-status action-btn" data-id="<?php echo $user->ID; ?>" title="<?php echo $suspended ? 'Reactivate' : 'Suspend'; ?>">
-                        <span class="btn-icon"><?php echo $suspended ? '✓' : '🚫'; ?></span>
+                        <span class="dashicons <?php echo $suspended ? 'dashicons-yes' : 'dashicons-warning'; ?>"></span>
                     </button>
                     <button class="delete-user action-btn" data-id="<?php echo $user->ID; ?>" title="Delete account">
-                        <span class="btn-icon">🗑</span>
+                        <span class="dashicons dashicons-trash"></span>
                     </button>
                 </td>
             </tr>

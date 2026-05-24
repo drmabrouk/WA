@@ -19,6 +19,7 @@ class DashboardManager {
      */
     public function enqueue_dashboard_assets() {
         if (is_page('wshc-dashboard')) {
+            wp_enqueue_style('dashicons');
             wp_enqueue_style('wshc-style', WSHC_PLUGIN_URL . 'assets/css/style.css', [], '1.0.0');
             wp_enqueue_style('wshc-dashboard-style', WSHC_PLUGIN_URL . 'assets/css/dashboard.css', [], '1.0.0');
             wp_enqueue_script('wshc-dashboard-js', WSHC_PLUGIN_URL . 'assets/js/dashboard.js', ['jquery'], '1.0.0', true);
