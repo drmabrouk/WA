@@ -160,12 +160,22 @@ jQuery(document).ready(function($) {
         const title = $(this).attr('title');
         $('#status-user-id').val(userId);
         $('#status-modal-message').text(`Are you sure you want to ${title.toLowerCase()}?`);
+
+        if (title.toLowerCase().includes('suspend')) {
+            $('#suspension-advanced-fields').removeClass('hidden');
+        } else {
+            $('#suspension-advanced-fields').addClass('hidden');
+        }
+
         $('#status-user-modal').removeClass('hidden').hide().fadeIn(200);
     });
 
     $('#confirm-status-btn').on('click', function() {
         const userId = $('#status-user-id').val();
         const btn = $(this);
+        const reason = $('#suspension-reason').val();
+        const duration = $('#suspension-duration').val();
+
         btn.prop('disabled', true).text('PROCESSING...');
 
         $.ajax({
@@ -174,7 +184,9 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'wshc_toggle_user_status',
                 nonce: wshc_dashboard_obj.nonce,
-                user_id: userId
+                user_id: userId,
+                reason: reason,
+                duration: duration
             },
             success: function(response) {
                 btn.prop('disabled', false).text('Confirm Change');
@@ -195,7 +207,8 @@ jQuery(document).ready(function($) {
         $('#user-modal').removeClass('hidden').hide().fadeIn(300);
     });
 
-    $(document).on('click', '.view-user', function() {
+    $(document).on('click', '.view-user', function(e) {
+        e.preventDefault();
         const userId = $(this).data('id');
         const row = $(this).closest('tr');
         const role = row.find('td:eq(2)').text();
@@ -214,15 +227,19 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     const u = response.data;
                     let html = `
-                        <div class="user-detail-row"><strong>ID</strong> #${u.ID}</div>
-                        <div class="user-detail-row"><strong>Name</strong> ${u.first_name} ${u.last_name}</div>
-                        <div class="user-detail-row"><strong>Username</strong> ${u.user_login}</div>
-                        <div class="user-detail-row"><strong>Email</strong> ${u.user_email}</div>
-                        <div class="user-detail-row"><strong>Role</strong> ${role}</div>
-                        <div class="user-detail-row"><strong>Joined</strong> ${joined}</div>
-                        <div class="user-detail-row"><strong>Status</strong> ${status}</div>
-                        <div style="margin-top: 20px;">
-                            <button class="wshc-auth-btn edit-trigger" data-id="${u.ID}" style="background: #000; width: 100%; margin-bottom: 10px;">Edit Account Information</button>
+                        <div id="printable-user-profile">
+                            <div class="user-detail-row"><strong>ID</strong> #${u.ID}</div>
+                            <div class="user-detail-row"><strong>First Name</strong> ${u.first_name || 'N/A'}</div>
+                            <div class="user-detail-row"><strong>Last Name</strong> ${u.last_name || 'N/A'}</div>
+                            <div class="user-detail-row"><strong>Username</strong> ${u.user_login}</div>
+                            <div class="user-detail-row"><strong>Email</strong> ${u.user_email}</div>
+                            <div class="user-detail-row"><strong>Role</strong> ${role}</div>
+                            <div class="user-detail-row"><strong>Joined Date</strong> ${joined}</div>
+                            <div class="user-detail-row"><strong>Account Status</strong> ${status}</div>
+                        </div>
+                        <div style="margin-top: 25px; display: flex; gap: 10px;">
+                            <button class="wshc-auth-btn edit-trigger" data-id="${u.ID}" style="background: #000; flex: 1;">Edit Account</button>
+                            <button class="wshc-auth-btn print-user-btn" style="background: #444; width: auto;"><span class="dashicons dashicons-printer"></span></button>
                         </div>
                     `;
                     $('#user-details-content').html(html);
@@ -230,6 +247,19 @@ jQuery(document).ready(function($) {
                 }
             }
         });
+    });
+
+    $(document).on('click', '.print-user-btn', function() {
+        const content = $('#printable-user-profile').html();
+        const printWindow = window.open('', '_blank', 'height=600,width=800');
+        printWindow.document.write('<html><head><title>User Profile</title>');
+        printWindow.document.write('<style>body{font-family:sans-serif;padding:40px;}.user-detail-row{margin-bottom:15px;padding-bottom:5px;border-bottom:1px solid #eee;}strong{display:inline-block;width:150px;text-transform:uppercase;font-size:12px;color:#666;}</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write('<h1>USER PROFILE</h1>');
+        printWindow.document.write(content);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
     });
 
     $(document).on('click', '#close-details-modal', function() {
@@ -244,7 +274,8 @@ jQuery(document).ready(function($) {
         triggerEditUser(userId);
     });
 
-    $(document).on('click', '.edit-user', function() {
+    $(document).on('click', '.edit-user', function(e) {
+        e.preventDefault();
         triggerEditUser($(this).data('id'));
     });
 
