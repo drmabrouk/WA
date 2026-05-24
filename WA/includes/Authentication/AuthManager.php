@@ -39,7 +39,7 @@ class AuthManager {
      * Check if current page is an auth page.
      */
     private function is_auth_page() {
-        return is_page(['wshc-login', 'wshc-registration', 'wshc-forgot-password']);
+        return is_page('login');
     }
 
     /**
@@ -85,22 +85,33 @@ class AuthManager {
     public function handle_registration() {
         check_ajax_referer('wshc_auth_nonce', 'nonce');
 
+        $first_name = sanitize_text_field($_POST['first_name']);
+        $last_name = sanitize_text_field($_POST['last_name']);
         $username = sanitize_user($_POST['username']);
         $email = sanitize_email($_POST['email']);
         $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
+
+        if ($password !== $confirm_password) {
+            wp_send_json_error(['message' => 'Passwords do not match.']);
+        }
 
         if (username_exists($username) || email_exists($email)) {
             wp_send_json_error(['message' => 'Username or email already exists.']);
         }
 
-        $user_id = wp_create_user($username, $password, $email);
+        $user_id = wp_insert_user([
+            'user_login' => $username,
+            'user_email' => $email,
+            'user_pass'  => $password,
+            'first_name' => $first_name,
+            'last_name'  => $last_name,
+            'role'       => 'wshc_member'
+        ]);
 
         if (is_wp_error($user_id)) {
             wp_send_json_error(['message' => $user_id->get_error_message()]);
         }
-
-        $user = new \WP_User($user_id);
-        $user->set_role('wshc_member');
 
         \WSHC\UserManagement\ActivityLogger::log($user_id, 'registration', 'User registered');
 

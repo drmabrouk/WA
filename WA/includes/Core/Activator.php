@@ -47,21 +47,13 @@ class Activator {
      */
     private static function create_pages() {
         $pages = [
-            'wshc-login' => [
+            'login' => [
                 'title'   => 'Login',
                 'content' => '[wshc_login_form]',
-            ],
-            'wshc-registration' => [
-                'title'   => 'Registration',
-                'content' => '[wshc_registration_form]',
             ],
             'id' => [
                 'title'   => 'Dashboard',
                 'content' => '[wshc_dashboard]',
-            ],
-            'wshc-forgot-password' => [
-                'title'   => 'Forgot Password',
-                'content' => '[wshc_forgot_password_form]',
             ],
         ];
 
