@@ -23,9 +23,15 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
             <div class="user-avatar-wrap">
                 <?php echo get_avatar($current_user->ID, 40); ?>
             </div>
-            <a href="<?php echo wp_logout_url(home_url('/login')); ?>" class="logout-icon-link circular" title="Logout">
-                <span class="dashicons dashicons-marker"></span>
-            </a>
+            <div class="nav-settings-dropdown">
+                <button class="settings-trigger-btn circular" title="Account Settings">
+                    <span class="dashicons dashicons-admin-generic"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" class="edit-my-profile-link"><span class="dashicons dashicons-admin-users"></span> Edit Profile Data</a></li>
+                    <li><a href="<?php echo wp_logout_url(home_url('/login')); ?>"><span class="dashicons dashicons-exit"></span> Logout</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -65,7 +71,7 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
                             <span class="nav-icon dashicons dashicons-admin-users"></span> My Account
                         </a>
                     </li>
-                    <?php if (current_user_can('wshc_visitor')) : ?>
+                    <?php if (current_user_can('wshc_visitor') || current_user_can('subscriber')) : ?>
                         <li>
                             <a href="<?php echo esc_url(add_query_arg('section', 'info-apply', $base_url)); ?>"
                                class="nav-link <?php echo $current_section === 'info-apply' ? 'active' : ''; ?>">
@@ -241,7 +247,7 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
             <?php endif; ?>
 
             <!-- Visitor Information & Apply Section -->
-            <div id="section-info-apply" class="dashboard-section <?php echo ($current_section === 'info-apply' || (empty($current_section) && current_user_can('wshc_visitor'))) ? '' : 'hidden'; ?>">
+            <div id="section-info-apply" class="dashboard-section <?php echo ($current_section === 'info-apply' || (empty($current_section) && (current_user_can('wshc_visitor') || current_user_can('subscriber')))) ? '' : 'hidden'; ?>">
                 <h1 class="section-title">MEMBERSHIP APPLICATION WIZARD</h1>
 
                 <?php
@@ -484,5 +490,38 @@ $system_title = in_array($roles[0], $admin_roles) ? 'Management System' : 'MY AC
                 </div>
             </div>
         </main>
+    </div>
+</div>
+
+<!-- My Profile Edit Modal -->
+<div id="my-profile-modal" class="wshc-modal hidden">
+    <div class="wshc-modal-content">
+        <h2>EDIT PROFILE DATA</h2>
+        <form id="wshc-my-profile-form">
+            <div class="wshc-auth-grid">
+                <div class="wshc-auth-form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" id="my-form-username" required minlength="4">
+                </div>
+                <div class="wshc-auth-form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" id="my-form-email" required>
+                </div>
+            </div>
+            <div class="wshc-auth-form-group">
+                <label>New Password (leave blank to keep current)</label>
+                <input type="password" name="password" id="my-form-password" minlength="8" maxlength="20">
+                <span class="password-toggle dashicons dashicons-visibility"></span>
+            </div>
+
+            <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                <button type="button" id="request-deletion-btn" class="wshc-auth-btn" style="background: #d32f2f; width: auto; font-size: 11px;">Request Account Deletion</button>
+            </div>
+
+            <div class="modal-actions">
+                <button type="submit" class="wshc-auth-btn">Update Profile</button>
+                <button type="button" class="wshc-auth-btn close-modal" style="background: #666;">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>

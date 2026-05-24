@@ -46,6 +46,7 @@ class DashboardManager {
                 'ajaxurl'         => admin_url('admin-ajax.php'),
                 'nonce'           => wp_create_nonce('wshc_dashboard_nonce'),
                 'current_user_id' => get_current_user_id(),
+                'logout_url'      => wp_logout_url(home_url('/login')),
             ]);
         }
     }

@@ -501,10 +501,70 @@ jQuery(document).ready(function($) {
         triggerEditUser($(this).data('id'));
     });
 
-    $(document).on('click', '.edit-my-profile', function() {
-        // Since we are editing ourselves, we can use a separate logic or reuse triggerEditUser
-        const userId = wshc_dashboard_obj.current_user_id; // Need to localize this
-        triggerEditUser(userId);
+    $(document).on('click', '.edit-my-profile, .edit-my-profile-link', function(e) {
+        e.preventDefault();
+        const userId = wshc_dashboard_obj.current_user_id;
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_get_user_details',
+                nonce: wshc_dashboard_obj.nonce,
+                user_id: userId
+            },
+            success: function(response) {
+                if (response.success) {
+                    const u = response.data;
+                    $('#my-form-username').val(u.user_login);
+                    $('#my-form-email').val(u.user_email);
+                    $('#my-form-password').val('');
+                    $('#my-profile-modal').removeClass('hidden').hide().fadeIn(300);
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#request-deletion-btn', function() {
+        if (!confirm('Are you sure you want to request account deletion? Your account will be removed in 48 hours. Logging back in will cancel this request.')) return;
+
+        const btn = $(this);
+        btn.prop('disabled', true).text('REQUESTING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wshc_request_deletion',
+                nonce: wshc_dashboard_obj.nonce
+            },
+            success: function(response) {
+                alert(response.data.message);
+                window.location.href = wshc_dashboard_obj.logout_url; // Use localized logout URL
+            }
+        });
+    });
+
+    $(document).on('submit', '#wshc-my-profile-form', function(e) {
+        e.preventDefault();
+        const btn = $(this).find('button[type="submit"]');
+        const formData = $(this).serialize();
+        btn.prop('disabled', true).text('UPDATING...');
+
+        $.ajax({
+            url: wshc_dashboard_obj.ajaxurl,
+            type: 'POST',
+            data: formData + '&action=wshc_save_user&user_id=' + wshc_dashboard_obj.current_user_id + '&nonce=' + wshc_dashboard_obj.nonce,
+            success: function(response) {
+                btn.prop('disabled', false).text('UPDATE PROFILE');
+                if (response.success) {
+                    alert('Profile updated successfully.');
+                    window.location.reload();
+                } else {
+                    alert(response.data.message);
+                }
+            }
+        });
     });
 
     function triggerEditUser(userId) {

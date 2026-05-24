@@ -80,6 +80,12 @@ class AuthManager {
             wp_send_json_error(['message' => $user->get_error_message()]);
         }
 
+        // Cancel pending deletion if user logs back in
+        if (get_user_meta($user->ID, 'wshc_pending_deletion', true)) {
+            delete_user_meta($user->ID, 'wshc_pending_deletion');
+            \WSHC\UserManagement\ActivityLogger::log($user->ID, 'deletion_cancelled', 'Account deletion request automatically cancelled upon login');
+        }
+
         \WSHC\UserManagement\ActivityLogger::log($user->ID, 'login', 'User logged in');
 
         wp_send_json_success([
