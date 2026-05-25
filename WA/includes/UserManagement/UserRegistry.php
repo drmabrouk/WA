@@ -199,22 +199,29 @@ class UserRegistry {
         $user_id = intval($_POST['user_id']);
         $reason = sanitize_text_field($_POST['reason'] ?? '');
         $duration = intval($_POST['duration'] ?? 0);
-        $status = get_user_meta($user_id, 'wshc_suspended', true);
+        $action_type = sanitize_text_field($_POST['action_type'] ?? 'suspend');
         
-        if ($status) {
-            delete_user_meta($user_id, 'wshc_suspended');
-            delete_user_meta($user_id, 'wshc_suspension_reason');
-            delete_user_meta($user_id, 'wshc_suspension_duration');
-            $message = 'User reactivated.';
-            ActivityLogger::log(get_current_user_id(), 'user_reactivate', "Reactivated user ID: $user_id");
-        } else {
-            update_user_meta($user_id, 'wshc_suspended', 1);
-            if ($reason) update_user_meta($user_id, 'wshc_suspension_reason', $reason);
-            if ($duration) update_user_meta($user_id, 'wshc_suspension_duration', $duration);
+        $suspended = get_user_meta($user_id, 'wshc_suspended', true);
+        $restricted = get_user_meta($user_id, 'wshc_restricted_until', true);
 
-            $log_details = "Suspended user ID: $user_id. Reason: $reason. Duration: $duration days.";
-            $message = 'User suspended.';
-            ActivityLogger::log(get_current_user_id(), 'user_suspend', $log_details);
+        if ($suspended || ($restricted && strtotime($restricted) > time())) {
+            delete_user_meta($user_id, 'wshc_suspended');
+            delete_user_meta($user_id, 'wshc_restricted_until');
+            delete_user_meta($user_id, 'wshc_restriction_reason');
+            $message = 'Account privileges restored.';
+            ActivityLogger::log(get_current_user_id(), 'user_reactivate', "Restored privileges for user ID: $user_id");
+        } else {
+            if ($action_type === 'restrict') {
+                $until = date('Y-m-d H:i:s', strtotime("+$duration days"));
+                update_user_meta($user_id, 'wshc_restricted_until', $until);
+                update_user_meta($user_id, 'wshc_restriction_reason', $reason);
+                $message = "Account restricted until $until.";
+                ActivityLogger::log(get_current_user_id(), 'user_restrict', "Restricted user ID: $user_id until $until. Reason: $reason");
+            } else {
+                update_user_meta($user_id, 'wshc_suspended', 1);
+                $message = 'User account suspended.';
+                ActivityLogger::log(get_current_user_id(), 'user_suspend', "Suspended user ID: $user_id. Reason: $reason");
+            }
         }
 
         wp_send_json_success(['message' => $message]);
